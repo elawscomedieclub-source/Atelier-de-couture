@@ -1,0 +1,2523 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Mesure &amp; Couture</title><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9C%82%EF%B8%8F%3C/text%3E%3C/svg%3E"><meta name="theme-color" content="#27407a">
+<style>
+:root{--bg:#f3f5f8;--fg:#17203a;--mut:#5b6580;--card:#fff;--bd:#d9dee8;--ac:#27407a;--ac2:#e4eaf7;--on:#fff;--er:#a32d2d;--tape:#f0c030;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12172a;--fg:#e9ecf5;--mut:#a3accb;--card:#1c2340;--bd:#333d63;--ac:#9db4ff;--ac2:#243059;--on:#12172a;--er:#f09595}}
+:root[data-theme="dark"]{--bg:#12172a;--fg:#e9ecf5;--mut:#a3accb;--card:#1c2340;--bd:#333d63;--ac:#9db4ff;--ac2:#243059;--on:#12172a;--er:#f09595}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+#app{max-width:520px;margin:0 auto;min-height:100%;display:flex;flex-direction:column}
+header{padding:14px 14px 8px}
+h1{font:600 22px/1.2 Georgia,"Times New Roman",serif;margin:0 0 10px;letter-spacing:.2px}
+h2{font:600 17px/1.3 Georgia,serif;margin:0 0 8px}
+.seg{display:flex;border:1px solid var(--bd);border-radius:8px;overflow:hidden;background:var(--card)}
+.seg button{flex:1;border:0;border-radius:0;background:none;padding:9px;font:inherit;color:var(--mut)}
+.seg button.on{background:var(--ac);color:var(--on);font-weight:600}
+main{flex:1;padding:6px 14px 16px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:12px;margin:0 0 10px}
+.g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+button{font:inherit;color:var(--fg);background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:10px 12px;cursor:pointer;min-height:44px}
+button.p{background:var(--ac);color:var(--on);border-color:var(--ac);font-weight:600}
+button.t{text-align:left;font-weight:600;border-left:4px solid var(--tape)}
+button.chip.on{background:var(--ac2);border-color:var(--ac);color:var(--ac);font-weight:600}
+input,select{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:9px;width:100%;box-sizing:border-box;min-height:44px}
+label{display:block;font-size:13px;color:var(--mut);margin:0 0 3px}
+.m{color:var(--mut);font-size:13px}.er{color:var(--er);font-size:13px;margin:4px 0}
+.row{display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px solid var(--bd)}
+.row:last-child{border:0}
+.dots{display:flex;gap:4px;margin:6px 0}.dots i{flex:1;height:6px;border-radius:3px;background:var(--bd)}.dots i.d{background:var(--tape)}
+nav{position:sticky;bottom:0;display:flex;background:var(--card);border-top:1px solid var(--bd);padding-bottom:env(safe-area-inset-bottom,0px)}
+nav button{flex:1;border:0;border-radius:0;background:none;font-size:12px;padding:10px 2px;color:var(--mut)}
+nav button.on{color:var(--ac);font-weight:600;box-shadow:inset 0 3px 0 var(--tape)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
+svg text{fill:var(--fg);font:12px system-ui,sans-serif}
+[dir=rtl] button.t{text-align:right}[dir=rtl] .row{direction:rtl}
+details.card>summary{cursor:pointer;min-height:36px;display:flex;align-items:center}
+svg.pg{display:block;width:100%;height:auto;background:#fff;border:1px solid var(--bd);margin:0 0 10px}.pg text{font:.5px system-ui,sans-serif;fill:#000}
+@media print{.np{display:none!important}body{background:#fff}:root:root:root{--bg:#fff;--fg:#111;--card:#fff;--bd:#999;--mut:#333;--ac:#111}@page{size:A4;margin:0}main{padding:1.5cm!important}main.pt{padding:0!important}svg.pg{width:21cm;height:29.7cm;margin:0;border:0;break-after:page}}
+</style></head><body><div id="app">
+<header class="np"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin:0 0 10px"><h1 id="ti" style="margin:0">Mesure &amp; Couture</h1><button id="bs" onclick="go('set')">Paramètres</button></div><div class="seg" role="group" aria-label="Espace"><button id="sc" onclick="setSp('c')">Espace client</button><button id="sp" onclick="setSp('p')">Espace professionnel</button></div><p id="sy" class="m" style="margin:6px 0 0">Données sur cet appareil seulement.</p></header>
+<main id="v"></main>
+<nav class="np" id="nv"></nav></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const $=id=>document.getElementById(id),R=n=>Math.round(n*10)/10;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const MS=[['poitrine','Poitrine'],['taille','Taille'],['bassin','Bassin'],['epaules','Épaules'],['cuisse','Cuisse'],['manche','Manche'],['entrejambe','Entrejambe'],['hauteur','Hauteur totale']];
+const DEF={poitrine:96,taille:80,bassin:100,epaules:44,cuisse:58,manche:62,entrejambe:78,hauteur:170};
+const STEPS=['Commande','Coupe','Couture','Finition','Livrée'];
+const MOD={
+pantalon:{n:'Pantalon',c:m=>[['Taille ÷ 4 + 1',m.taille/4+1],['Bassin ÷ 4 + 2',m.bassin/4+2],['Cuisse ÷ 2 + 2',m.cuisse/2+2],['Entrejambe',m.entrejambe],['Longueur',m.longueur]],p:m=>[['Devant',m.bassin/4+5,m.longueur+6,2],['Dos',m.bassin/4+7,m.longueur+6,2],['Ceinture',m.taille+6,8,1]],d:m=>[m.taille/4+1,m.bassin/4+2,m.cuisse/2+2,m.longueur]},
+chemise:{n:'Chemise',c:m=>[['Poitrine ÷ 4 + 4',m.poitrine/4+4],['Taille ÷ 4 + 3',m.taille/4+3],['Épaules ÷ 2',m.epaules/2],['Emmanchure : poitrine ÷ 6 + 5',m.poitrine/6+5],['Encolure : poitrine ÷ 12 + 1',m.poitrine/12+1],['Manche',m.manche],['Longueur',m.longueur]],p:m=>[['Devant',m.poitrine/4+7,m.longueur+4,2],['Dos',m.poitrine/4+7,m.longueur+4,1],['Manches',m.poitrine/5+6,m.manche+4,2],['Col',40,8,2]],d:m=>[m.epaules/2,m.poitrine/4+4,m.taille/4+3,m.longueur]},
+veste:{n:'Veste / costume',c:m=>[['Poitrine ÷ 4 + 6',m.poitrine/4+6],['Taille ÷ 4 + 5',m.taille/4+5],['Épaules ÷ 2',m.epaules/2],['Emmanchure : poitrine ÷ 6 + 6',m.poitrine/6+6],['Encolure : poitrine ÷ 12 + 2',m.poitrine/12+2],['Manche',m.manche],['Longueur',m.longueur]],p:m=>[['Devant',m.poitrine/4+9,m.longueur+4,2],['Dos',m.poitrine/4+9,m.longueur+4,1],['Manches',m.poitrine/5+8,m.manche+4,2],['Col',45,10,2]],d:m=>[m.epaules/2,m.poitrine/4+6,m.taille/4+5,m.longueur]},
+robe:{n:'Robe',c:m=>[['Poitrine ÷ 4 + 3',m.poitrine/4+3],['Taille ÷ 4 + 2',m.taille/4+2],['Hanches : bassin ÷ 4 + 3',m.bassin/4+3],['Épaules ÷ 2',m.epaules/2],['Emmanchure : poitrine ÷ 6 + 5',m.poitrine/6+5],['Longueur',m.longueur]],p:m=>[['Devant',m.bassin/4+6,m.longueur+6,2],['Dos',m.bassin/4+6,m.longueur+6,2]],d:m=>[m.epaules/2,m.taille/4+2,m.bassin/4+3,m.longueur]},
+boubou:{n:'Boubou',c:m=>[['Largeur du panneau : bassin ÷ 2 + 16',m.bassin/2+16],['Longueur',m.longueur],['Épaules ÷ 2',m.epaules/2],['Manche',m.manche],['Encolure : poitrine ÷ 10 + 4',m.poitrine/10+4]],p:m=>[['Panneau',m.bassin/2+19,m.longueur+8,2],['Manches',m.poitrine/4+14,m.manche+4,2]],d:m=>[m.epaules/2,m.bassin/2+16,m.bassin/2+16,m.longueur]}};
+const H='Hauts',V='Vestes et manteaux',B='Bas',J='Jupes',RB='Robes',A='Tenues africaines',CB='Combinaisons',HM='Tenues homme',EF='Enfants',RT='Retouches',CATS=[H,V,B,J,RB,A,HM,CB,EF,RT];
+const CP={Hauts:6000,'Vestes et manteaux':22000,Bas:8000,Jupes:6000,Robes:12000,'Tenues africaines':15000,Combinaisons:14000,'Tenues homme':15000,Enfants:6000,Retouches:2500};
+const PR={goodluckhaut:15000,goodluckhautc:13000,goodluckens:25000,goodluckensc:23000,pantalondroit:8000,ourletpantalon:1500,ourletjupe:2000,ourletmanches:2500,ourletjean:2500,retrecir:3000,elargir:3500,fermeture:2500,boutons:500,reparer:2000,doublure:8000,epaulesret:6000,elastique:1500,poche:2000,transfo:5000,coutures:2000,autreret:3000,robebapteme:20000,robecerem:12000,agbada:40000,senator:18000,sokoto:8000,babariga:25000,pantalon:8000,chemise:7000,veste:20000,robe:12000,boubou:15000,tshirt:4000,polo:5000,bustier:8000,corset:10000,manteau:25000,trench:28000,blazer:22000,jean:10000,short:5000,legging:5000,jogging:7000,jupecloche:8000,jupesirene:9000,robesirene:25000,robesoiree:30000,robemariee:80000,grandboubou:25000,abaya:18000,djellaba:18000,salopette:12000,combinaison:15000,combishort:12000};
+function mk(n,g,cat){const f=g.f,e=g.e||0,lf=g.lf,s=g.s||0,fl=g.fl||0,bw=g.bw||0,st=g.st,a=2+e/4,L=m=>(m.hauteur||m.entrejambe/.46)*lf,SL=m=>m.manche*s,fp=Math.max(fl,0),o={n:n,g:g,cat:cat};
+if(f==='set'){const a=mk(n,g.set[0],cat),b=mk(n,g.set[1],cat);return{n:n,g:g.set[0],gs:g.set,cat:cat,c:m=>a.c(m).concat(b.c(m).map(x=>['Pantalon : '+x[0],x[1]])),p:m=>a.p(m).concat(b.p(m).map(q=>[q[0]+' pantalon',q[1],q[2],q[3]])),d:a.d}}
+if(f==='top'){o.c=m=>[['Poitrine ÷ 4 + '+R(a),m.poitrine/4+a],['Taille ÷ 4 + '+R(a-1),m.taille/4+a-1]].concat(st?[]:[['Épaules ÷ 2',m.epaules/2],['Emmanchure : poitrine ÷ 6 + 5',m.poitrine/6+5],['Encolure : poitrine ÷ 12 + 1',m.poitrine/12+1]],s?[['Manche',SL(m)]]:[],[['Longueur',L(m)]]);
+o.p=m=>[['Devant',m.poitrine/4+a+3,L(m)+4,2],['Dos',m.poitrine/4+a+3,L(m)+4,st?2:1]].concat(s?[['Manches',m.poitrine/5+6,SL(m)+4,2]]:[],g.col?[['Col',40,8,2]]:[]);
+o.d=m=>[st?m.poitrine/4+a:m.epaules/2,m.poitrine/4+a,m.taille/4+a-1,L(m)]}
+else if(f==='pants'){o.c=m=>[['Taille ÷ 4 + 1',m.taille/4+1],['Bassin ÷ 4 + 2',m.bassin/4+2],['Cuisse ÷ 2 + 2',m.cuisse/2+2],['Entrejambe',Math.min(m.entrejambe,L(m))],['Longueur',L(m)]];
+o.p=m=>[['Devant',m.bassin/4+5,L(m)+6,2],['Dos',m.bassin/4+7,L(m)+6,2],['Ceinture',m.taille+6,8,1]];
+o.d=m=>[m.taille/4+1,m.bassin/4+2,m.cuisse/2+2,L(m)]}
+else if(f==='skirt'){o.c=m=>[['Taille ÷ 4 + 2',m.taille/4+2],['Bassin ÷ 4 + 3',m.bassin/4+3],['Longueur',L(m)]];
+o.p=m=>[['Devant',m.bassin/4+5+fp/2,L(m)+6,2],['Dos',m.bassin/4+5+fp/2,L(m)+6,2],['Ceinture',m.taille+6,8,1]];
+o.d=m=>[m.taille/4+2,m.bassin/4+3,m.bassin/4+3+fl/2,L(m)]}
+else if(f==='dress'||f==='combo'){o.c=m=>[['Poitrine ÷ 4 + 3',m.poitrine/4+3],['Taille ÷ 4 + 2',m.taille/4+2],['Hanches : bassin ÷ 4 + 3',m.bassin/4+3]].concat(st?[]:[['Épaules ÷ 2',m.epaules/2]],[['Longueur',L(m)]],s?[['Manche',SL(m)]]:[]);
+o.p=m=>[['Devant',m.bassin/4+6+fp/2,L(m)+6,2],['Dos',m.bassin/4+6+fp/2,L(m)+6,2]].concat(s?[['Manches',m.poitrine/5+6,SL(m)+4,2]]:[]);
+o.d=m=>[st?m.poitrine/4+3:m.epaules/2,m.taille/4+2,m.bassin/4+3+fp/2,L(m)]}
+else{o.c=m=>[['Largeur du panneau : bassin ÷ 2 + '+bw,m.bassin/2+bw],['Longueur',L(m)],['Épaules ÷ 2',m.epaules/2]].concat(s?[['Manche',SL(m)]]:[],[['Encolure : poitrine ÷ 10 + 4',m.poitrine/10+4]]);
+o.p=m=>[['Panneau',m.bassin/2+bw+3,L(m)+8,2]].concat(s?[['Manches',m.poitrine/4+14,SL(m)+4,2]]:[]);
+o.d=m=>[m.epaules/2,m.bassin/2+bw,m.bassin/2+bw,L(m)]}
+return o}
+[['pantalon',B,{f:'pants',lf:.59}],['chemise',H,{pk:'c',bt:6,f:'top',e:8,lf:.40,s:1}],['veste',V,{pk:'h2',lap:1,bt:3,f:'top',e:12,lf:.47,s:1}],['robe',RB,{f:'dress',lf:.52,s:0,fl:5}],['boubou',A,{em:1,f:'wide',lf:.72,s:1,bw:16}]].forEach(a=>{const n=MOD[a[0]].n,c=MOD[a[0]].c,p=MOD[a[0]].p,d=MOD[a[0]].d;const w=f=>m=>f(Object.assign({},m,{longueur:(m.hauteur||m.entrejambe/.46)*a[2].lf}));MOD[a[0]]={n:n,c:w(c),p:w(p),d:w(d),g:a[2],cat:a[1]}});
+[['tshirt','T-shirt',H,{f:'top',e:10,lf:.38,s:.3}],['polo','Polo',H,{bt:3,f:'top',e:8,lf:.40,s:.3,col:1}],['blouse','Blouse',H,{bt:5,f:'top',e:10,lf:.40,s:.5}],['tunique','Tunique',H,{f:'top',e:10,lf:.52,s:.7}],['bustier','Bustier',H,{f:'top',e:2,lf:.17,st:1}],['corset','Corset',H,{f:'top',e:1,lf:.24,st:1}],['croptop','Crop top',H,{f:'top',e:6,lf:.22,s:.3}],['debardeur','Débardeur',H,{f:'top',e:6,lf:.37,s:0}],['gilet','Gilet',H,{pk:'h2',bt:5,f:'top',e:10,lf:.40,s:0}],['sweat','Sweat',H,{f:'top',e:14,lf:.42,s:1}],
+['blazer','Blazer',V,{pk:'h2',lap:1,bt:2,f:'top',e:12,lf:.46,s:1,col:1}],['tailleur','Tailleur',V,{pk:'h2',lap:1,bt:2,f:'top',e:10,lf:.44,s:1,col:1}],['manteau','Manteau',V,{pk:'h2',lap:1,bt:5,f:'top',e:16,lf:.64,s:1,col:1}],['trench','Trench',V,{pk:'h2',lap:1,bt:6,f:'top',e:18,lf:.7,s:1,col:1}],
+['pantalonlarge','Pantalon large',B,{f:'pants',lf:.59,mw:1,lw:1,pe:2.5}],['slim','Pantalon slim',B,{f:'pants',lf:.59,mw:.62,lw:.42,pe:.2}],['evase','Pantalon évasé',B,{f:'pants',lf:.59,mw:.7,lw:1,pe:.8}],['jean','Pantalon jean',B,{f:'pants',lf:.59,mw:.75,lw:.5,pe:.6}],['jogging','Jogging',B,{dr:1,f:'pants',lf:.59,mw:.9,lw:.45,pe:2}],['legging','Legging',B,{f:'pants',lf:.59,mw:.58,lw:.38,pe:0}],['sarouel','Sarouel',B,{f:'pants',lf:.55,mw:1.5,lw:.45,pe:5}],['short','Short',B,{f:'pants',lf:.2}],['bermuda','Bermuda',B,{f:'pants',lf:.3}],
+['jupe','Jupe évasée',J,{rp:[8,.02],f:'skirt',lf:.3,fl:10}],['jupedroite','Jupe droite',J,{f:'skirt',lf:.3,fl:2}],['jupecrayon','Jupe crayon',J,{f:'skirt',lf:.3,fl:-4}],['jupeportefeuille','Jupe portefeuille',J,{rp:[6,.02],f:'skirt',lf:.32,fl:8}],['jupeplissee','Jupe plissée',J,{rp:[18,.05],f:'skirt',lf:.34,fl:14}],['jupecloche','Jupe cloche',J,{rp:[10,.03],f:'skirt',lf:.3,fl:30}],['jupesirene','Jupe sirène',J,{f:'skirt',lf:.45,fl:14,mer:1}],['jupeballon','Jupe ballon',J,{f:'skirt',lf:.22,fl:-6,bl:8}],['jupemini','Mini-jupe',J,{f:'skirt',lf:.16,fl:6}],['jupelongue','Jupe longue',J,{rp:[8,.02],f:'skirt',lf:.55,fl:10}],
+['robedroite','Robe droite',RB,{f:'dress',lf:.5,s:0,fl:0}],['robetrapeze','Robe trapèze',RB,{rp:[10,.03],f:'dress',lf:.5,s:0,fl:18}],['robeovale','Robe ovale',RB,{f:'dress',lf:.46,s:0,fl:-10,bl:6}],['robesirene','Robe sirène',RB,{f:'dress',lf:.72,s:0,fl:14,mer:1}],['robeempire','Robe empire',RB,{belt:2,f:'dress',lf:.6,s:0,fl:12,emp:1}],['robecintree','Robe cintrée',RB,{belt:1,f:'dress',lf:.5,s:0,fl:4}],['robeportefeuille','Robe portefeuille',RB,{f:'dress',lf:.55,s:.4,fl:10}],['robechemise','Robe chemise',RB,{belt:1,bt:6,f:'dress',lf:.5,s:1,fl:4}],['robebustier','Robe bustier',RB,{f:'dress',lf:.46,s:0,fl:8,st:1}],['robesoiree','Robe de soirée',RB,{rp:[10,.03],f:'dress',lf:.75,s:0,fl:16}],['robemariee','Robe de mariée',RB,{rp:[10,.03],f:'dress',lf:.76,s:0,fl:35,st:1}],['robelongue','Robe longue',RB,{f:'dress',lf:.8,s:0,fl:8}],
+['caftan','Caftan',A,{em:1,f:'wide',lf:.68,s:1,bw:8}],['dashiki','Dashiki',A,{em:1,f:'wide',lf:.45,s:.5,bw:12}],['djellaba','Djellaba',A,{f:'wide',lf:.78,s:1,bw:10}],['abaya','Abaya',A,{f:'wide',lf:.8,s:1,bw:8}],['gandoura','Gandoura',A,{em:1,f:'wide',lf:.78,s:.6,bw:12}],['grandboubou','Grand boubou',A,{em:1,f:'wide',lf:.78,s:1,bw:20}],['kaba','Kaba',A,{f:'dress',lf:.55,s:.5,fl:8}],
+['combinaison','Combinaison',CB,{f:'combo',lf:.8,s:.4}],['combishort','Combishort',CB,{f:'combo',lf:.44,s:.3}],['salopette','Salopette',CB,{f:'combo',lf:.74,s:0,st:1}],
+['agbada','Agbada',HM,{em:1,f:'wide',lf:.72,s:1,bw:30}],['senator','Haut Senator',HM,{em:1,bt:5,f:'top',e:14,lf:.52,s:1,col:1}],['sokoto','Sokoto',HM,{f:'pants',lf:.59,mw:1.3,lw:.55,pe:4}],['buba','Buba',HM,{f:'top',e:22,lf:.5,s:1}],['babariga','Babariga',HM,{em:1,f:'wide',lf:.76,s:1,bw:24}],['hautcomplet','Complet sénégalais (haut)',HM,{bt:4,f:'top',e:14,lf:.56,s:1}],['madiba','Chemise Madiba',HM,{pk:'c',bt:5,f:'top',e:12,lf:.46,s:1,col:1}],['batakari','Batakari',HM,{f:'wide',lf:.5,s:.8,bw:14}],['chemiseafricaine','Chemise africaine',HM,{pk:'c',f:'top',e:10,lf:.44,s:.3}],['vestemao','Veste col Mao',HM,{bt:5,f:'top',e:12,lf:.5,s:1,col:1}],['thobe','Thobe',HM,{f:'wide',lf:.8,s:1,bw:12}],
+['barboteuse','Barboteuse',EF,{f:'combo',lf:.47,s:.3}],['salopetteenfant','Salopette enfant',EF,{f:'combo',lf:.74,s:0,st:1}],['robebapteme','Robe de baptême',EF,{rp:[10,.03],f:'dress',lf:.75,s:.6,fl:24}],['robefillette','Robe fillette',EF,{rp:[10,.03],f:'dress',lf:.42,s:.3,fl:14}],['robecerem','Robe de cérémonie enfant',EF,{rp:[10,.03],f:'dress',lf:.6,s:0,fl:22}],['jupefillette','Jupe fillette',EF,{rp:[8,.02],f:'skirt',lf:.28,fl:14}],['shortgarcon','Short garçon',EF,{f:'pants',lf:.22}],['pantalonenfant','Pantalon enfant',EF,{f:'pants',lf:.59}],['chemiseenfant','Chemise garçon',EF,{pk:'c',bt:5,f:'top',e:10,lf:.42,s:.5}],['tshirtenfant','T-shirt enfant',EF,{f:'top',e:10,lf:.38,s:.3}],['uniforme','Uniforme scolaire (chemisette)',EF,{bt:4,f:'top',e:10,lf:.42,s:.3,col:1}],['pyjama','Pyjama (haut)',EF,{bt:5,f:'top',e:14,lf:.48,s:1}],['vesteenfant','Veste enfant',EF,{pk:'h2',lap:1,bt:3,f:'top',e:12,lf:.45,s:1,col:1}],['bouboukid','Boubou enfant',EF,{em:1,f:'wide',lf:.6,s:.8,bw:10}],['kaftankid','Kaftan enfant',EF,{em:1,f:'wide',lf:.55,s:1,bw:10}],
+['goodluckhaut','Good Luck (haut long)',HM,{f:'top',e:12,lf:.56,s:1,em:3,nk:1,pk:'c',slit:20}],['goodluckhautc','Good Luck (haut court)',HM,{f:'top',e:12,lf:.47,s:1,em:3,nk:1,pk:'c',slit:20}],['pantalondroit','Pantalon droit',HM,{f:'pants',lf:.59,mw:.75,lw:.62,pe:.4}],['goodluckens','Good Luck (ensemble long)',HM,{f:'set',set:[{f:'top',e:12,lf:.56,s:1,em:3,nk:1,pk:'c',slit:20},{f:'pants',lf:.59,mw:.75,lw:.62,pe:.4,hid:1}]}],['goodluckensc','Good Luck (ensemble court)',HM,{f:'set',set:[{f:'top',e:12,lf:.47,s:1,em:3,nk:1,pk:'c',slit:20},{f:'pants',lf:.59,mw:.75,lw:.62,pe:.4,hid:1}]}]].forEach(a=>{MOD[a[0]]=mk(a[1],a[3],a[2])});
+[['ourletpantalon','Ourlet pantalon'],['ourletjupe','Ourlet jupe / robe'],['ourletmanches','Raccourcir les manches'],['ourletjean','Ourlet jean (surjet original)'],['retrecir','Rétrécir (taille / côtés)'],['elargir','Élargir / agrandir'],['fermeture','Changer une fermeture éclair'],['boutons','Remplacer / recoudre des boutons'],['reparer','Réparer une déchirure / repriser'],['doublure','Changer la doublure'],['epaulesret','Ajuster les épaules'],['elastique','Changer un élastique'],['poche','Réparer / refaire une poche'],['transfo','Transformation (modèle différent)'],['coutures','Reprendre les coutures'],['autreret','Autre retouche']].forEach(a=>{MOD[a[0]]=mk(a[1],{f:'pants',lf:1},RT);MOD[a[0]].ret=1});
+let db={clients:[],orders:[],prices:{pantalon:8000,chemise:7000,veste:20000,robe:12000,boubou:15000},cid:null,width:150,shrink:3,fab:'#7a2e3b',at:'',cur:'FCFA',atel:'',vd:'',cond:'',rd:3,stock:[],ateliers:[],atl:null,sk:'#b98a6a',tc:'auto',lang:['en','es','pt','ar'].indexOf((navigator.language||'fr').slice(0,2))>-1?(navigator.language||'fr').slice(0,2):'fr'};
+try{const s=localStorage.getItem('mc');if(s)db=Object.assign(db,JSON.parse(s))}catch(e){}
+for(const k in MOD)if(db.prices[k]==null)db.prices[k]=PR[k]||CP[MOD[k].cat]||10000;
+let rdb=null,lastS='',sr=false;
+const save=()=>{try{localStorage.setItem('mc',JSON.stringify(db))}catch(e){}sset()};
+let sp='c',tab='home',mod='pantalon',msg='',err='';
+const C=()=>db.clients.find(c=>c.id===db.cid),Ms=()=>{const c=C(),r=Object.assign({},defM(c),(c||{}).m||{});if(c&&c.m&&!c.m.hauteur)r.hauteur=Math.round(r.entrejambe/.46);return r},P=()=>sp==='p';
+const fmt=n=>Number(n).toLocaleString('fr-FR')+' '+curOf();
+function go(t){tab=t;msg='';err='';shr=null;render()}
+function setSp(s){sp=s;if(!P()&&tab==='x')tab='home';render()}
+function tabs(){return[['home','Accueil'+(rems().length?' ('+rems().length+')':'')],['cli',P()?'Clients':'Profil'],['mes','Mesures'],['mod','Modèles'],['cmd','Commandes'],['prix','Prix']]}
+function render(){
+document.documentElement.lang=db.lang;document.documentElement.dir=db.lang==='ar'?'rtl':'ltr';$('v').className=tab==='pat'?'pt':'';$('ti').textContent=db.at||'Mesure & Couture';$('sc').textContent=T('Espace client');$('sp').textContent=T('Espace professionnel');$('bs').textContent=T('Paramètres');$('sy').textContent=T($('sy').dataset.f||'Données sur cet appareil seulement.');
+$('sc').className=P()?'':'on';$('sp').className=P()?'on':'';
+$('nv').innerHTML=tabs().map(t=>'<button class="'+(tab===t[0]?'on':'')+'" onclick="go(\''+t[0]+'\')">'+t[1]+'</button>').join('');
+$('v').innerHTML=(msg?'<p class="m">'+esc(msg)+'</p>':'')+(err?'<p class="er">'+esc(err)+'</p>':'')+VIEW[tab]();if(db.lang!=='fr'){$('nv').innerHTML=T($('nv').innerHTML);$('v').innerHTML=T($('v').innerHTML)}if(tab==='mod')setup3d();if(tab==='ph')setupPh();
+}
+const who=()=>C()?'<p class="m">Client actif : <b>'+esc(C().name)+'</b></p>':'<p class="m">Aucun client actif. Mesures standard utilisées.</p>';
+const VIEW={
+home(){
+const t=[['cli',P()?'Nouveau client':'Mon profil'],['cli',P()?'Clients existants':'Changer de profil'],['cmd','Nouvelle commande'],['mes','Mesures'],['mod','Modèles d\'habit'],['prix','Prix']].concat(P()?[['dash','Tableau de bord'],['stk','Stock']]:[],[['help','Mode d\'emploi']]);
+const cur=db.orders.filter(o=>o.step<4);
+return '<h2>Accueil</h2>'+who()+remHtml()+stkLow()+'<div class="g2">'+t.map(a=>'<button class="t" onclick="go(\''+a[0]+'\')">'+a[1]+'</button>').join('')+'</div><h2 style="margin-top:16px">Commandes en cours</h2>'+(cur.length?cur.map(oHtml).join(''):'<div class="card m">Aucune commande en cours. Créez-en une depuis Commandes.</div>')+histO();
+},
+cli(){
+return '<h2>'+(P()?'Clients':'Mon profil')+'</h2><div class="card"><label for="cn">Nom complet</label><input id="cn" placeholder="Awa Diop"><label for="ct" style="margin-top:8px">Téléphone</label><input id="ct" type="tel" placeholder="77 000 00 00"><label for="ca" style="margin-top:8px">Âge (enfants, en années)</label><input id="ca" type="number" inputmode="numeric" min="1" max="15" placeholder="Ex. 6"><button class="p" style="margin-top:10px;width:100%" onclick="addC()">Ajouter</button></div>'+impBox()+shareBox()+
+(db.clients.length?db.clients.map(c=>'<div class="card"><div class="row" style="border:0"><div><b>'+esc(c.name)+'</b><div class="m">'+esc(c.tel||'Sans téléphone')+(c.age?' · '+c.age+' ans':'')+'</div></div><div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end"><button class="chip'+(db.cid===c.id?' p':'')+'" onclick="pick('+c.id+')">'+(db.cid===c.id?'Actif':'Choisir')+'</button><button onclick="shareC('+c.id+')">Partager</button>'+(P()?'<button onclick="delC('+c.id+')" aria-label="Supprimer">Suppr.</button>':'')+'</div></div></div>').join(''):'<div class="card m">Aucun client. Ajoutez le premier ci-dessus.</div>');
+},
+mes(){
+const c=C();if(!c)return '<h2>Mesures</h2><div class="card">Choisissez ou créez un client pour enregistrer ses mesures.<button class="p" style="margin-top:10px;width:100%" onclick="go(\'cli\')">'+(P()?'Ajouter un client':'Créer mon profil')+'</button></div>';
+const m=Ms();
+return '<h2>Mesures</h2>'+who()+(isKid(c)&&!c.m?'<p class="m">Mesures standard pour '+c.age+' ans (estimation) : remplacez-les par les vraies mesures de l\'enfant.</p>':'')+'<div class="card"><label for="sx">Silhouette du mannequin</label><select id="sx" onchange="setSx(this.selectedIndex)" style="margin-bottom:8px">'+['Neutre','Femme','Homme'].map((x,i)=>'<option'+((c.sx==='f'?1:c.sx==='h'?2:0)===i?' selected':'')+'>'+x+'</option>').join('')+'</select><div class="g2">'+MS.map(k=>'<div><label for="m_'+k[0]+'">'+k[1]+' (cm)</label><input id="m_'+k[0]+'" type="number" inputmode="decimal" min="1" value="'+(c.m?m[k[0]]:'')+'" placeholder="'+defM(c)[k[0]]+'"></div>').join('')+'</div><button class="p" style="margin-top:12px;width:100%" onclick="saveM()">Enregistrer les mesures</button></div>';
+},
+mod(){
+const m=Ms(),M=MOD[mod],pcs=M.p(m),d=M.d(m);
+let h='<h2>Modèles d\'habit</h2>'+catChips()+'<div class="chips">'+Object.keys(MOD).filter(k=>MOD[k].cat===curCat()).map(k=>'<button class="chip'+(k===mod?' on':'')+'" onclick="mod=\''+k+'\';render()">'+MOD[k].n+'</button>').join('')+'</div>'+who();
+h+='<div class="card np"><h2>Sur le mannequin</h2>'+fab()+skinChips()+trimChips()+'<div id="c3" style="min-height:300px"></div><p class="m" style="margin:6px 0">Glissez sur le mannequin pour le tourner en 3D.</p><div class="chips" id="v3b"><button class="chip" onclick="view3(0)">Face</button><button class="chip" onclick="view3(Math.PI/2)">Profil</button><button class="chip" onclick="view3(Math.PI)">Dos</button></div><button style="width:100%;margin-top:8px" onclick="go(\'ph\')">Essayer sur une photo</button>'+'<p class="m" style="margin:6px 0 0">'+(C()&&C().m?'Mannequin aux mesures de '+esc(C().name):'Mannequin aux mesures standard : enregistrez des mesures pour l\'adapter')+'</p></div>';
+if(P())h+='<div class="card" id="pt">'+draw(d[0],d[1],d[2],d[3])+'</div>';
+if(!P())return h+shareBox()+atSel()+'<button class="p" style="width:100%" onclick="sendOrder(\''+mod+'\')">Envoyer à l\'atelier : '+fmt(priceOf(mod))+'</button>';
+h+='<div class="card"><h2>Calculs</h2>'+M.c(m).map(a=>'<div class="row"><span>'+a[0]+'</span><b>'+R(a[1])+' cm</b></div>').join('')+'</div>';
+h+='<div class="card np"><h2>Tissu</h2><div class="g2"><div><label for="tw">Largeur du tissu (cm)</label><input id="tw" type="number" inputmode="decimal" value="'+db.width+'" onchange="db.width=Math.max(30,+this.value||150);save();render()"></div><div><label for="ts">Rétrécissement (%)</label><input id="ts" type="number" inputmode="decimal" value="'+db.shrink+'" onchange="db.shrink=Math.max(0,+this.value||0);save();render()"></div></div></div>';
+let L=0,warn='';
+const rows=pcs.map(p=>{const k=Math.max(1,Math.floor(db.width/p[1]));if(p[1]>db.width)warn='Une pièce dépasse la largeur du tissu : coupez-la en deux parties.';L+=Math.ceil(p[3]/k)*p[2];return '<div class="row"><span>'+p[0]+' ×'+p[3]+'</span><span>'+R(p[1])+' × '+R(p[2])+' cm</span></div>'});
+h+='<div class="card"><h2>Pièces à couper</h2>'+rows.join('')+'<div class="row"><b>Tissu estimé</b><b>'+(Math.ceil(L*(1+db.shrink/100)/5)*5/100).toFixed(2)+' m</b></div>'+(warn?'<p class="er">'+warn+'</p>':'')+'</div>';
+return h+stkUseBox(Math.ceil(L*(1+db.shrink/100)/5)*5/100)+'<button class="np" style="width:100%" onclick="window.print()">Imprimer le patron</button><button class="p np" style="width:100%;margin-top:8px" onclick="go(\'pat\')">Patron grandeur nature (A4)</button>';
+},
+cmd(){
+let os=P()?db.orders:db.orders.filter(o=>o.cid===db.cid);if(fl==='run')os=os.filter(o=>o.step<4);if(fl==='done')os=os.filter(o=>o.step===4);if(fl==='due')os=os.filter(o=>paid(o)<o.price);
+return '<h2>Commandes</h2>'+atSel()+'<div class="card"><label for="om">Modèle</label><select id="om">'+CATS.map(c=>'<optgroup label="'+c+'">'+Object.keys(MOD).filter(k=>MOD[k].cat===c).map(k=>'<option value="'+k+'"'+(k===mod?' selected':'')+'>'+MOD[k].n+' – '+fmt(priceOf(k))+'</option>').join('')+'</optgroup>').join('')+'</select>'+who()+'<button class="p" style="width:100%" onclick="order($(\'om\').value)">Créer la commande</button></div>'+shareBox()+fchips()+(os.length?os.map(oHtml).join(''):'<div class="card m">Aucune commande pour le moment.</div>');
+},
+prix(){
+return '<h2>Prix</h2>'+(!P()&&AT()?'<p class="m">'+esc(AT().n)+'</p>':'')+'<div class="card">'+CATS.map(c=>'<div class="m" style="margin-top:8px"><b>'+c+'</b></div>'+Object.keys(MOD).filter(k=>MOD[k].cat===c).map(k=>'<div class="row" style="align-items:center"><span>'+MOD[k].n+'</span>'+(P()?'<input type="number" inputmode="numeric" style="width:130px" value="'+db.prices[k]+'" aria-label="Prix '+MOD[k].n+'" onchange="db.prices[\''+k+'\']=Math.max(0,+this.value||0);save()">':'<b>'+fmt(priceOf(k))+'</b>')+'</div>').join('')).join('')+'</div>'+(P()?'<p class="m">Les prix sont enregistrés dès que vous quittez le champ.</p>':'');
+},
+set(){return '<h2>Paramètres</h2><div class="card"><label for="sl">Langue</label><select id="sl" onchange="db.lang=this.value;save();render()"><option value="fr"'+(db.lang==='fr'?' selected':'')+'>Français</option><option value="en"'+(db.lang==='en'?' selected':'')+'>English</option><option value="es"'+(db.lang==='es'?' selected':'')+'>Español</option><option value="pt"'+(db.lang==='pt'?' selected':'')+'>Português</option><option value="ar"'+(db.lang==='ar'?' selected':'')+'>العربية</option></select><label for="sa" style="margin-top:8px">Nom de l\'atelier</label><input id="sa" maxlength="40" value="'+esc(db.at)+'" placeholder="Ex. Atelier Diop" onchange="db.at=this.value.trim();save();render()"><label for="st" style="margin-top:8px">Téléphone de l\'atelier (avec l\'indicatif du pays)</label><input id="st" type="tel" inputmode="tel" value="'+esc(db.atel)+'" placeholder="Ex. 221770000000" onchange="db.atel=this.value.replace(/[^0-9]/g,\'\');save();render()"><label for="sd" style="margin-top:8px">Devise</label><input id="sd" maxlength="8" value="'+esc(db.cur)+'" onchange="db.cur=this.value.trim()||\'FCFA\';save();render()"><label for="sv" style="margin-top:8px">Validité du devis (jours, facultatif)</label><input id="sv" type="number" inputmode="numeric" min="0" value="'+esc(db.vd)+'" onchange="db.vd=Math.max(0,parseInt(this.value)||0)||\'\';save();render()"><label for="sc3" style="margin-top:8px">Conditions de paiement (facultatif)</label><textarea id="sc3" rows="3" maxlength="200" style="'+TA+'" onchange="db.cond=this.value.trim();save();render()">'+esc(db.cond)+'</textarea><label for="sr" style="margin-top:8px">Rappel de livraison (jours avant)</label><input id="sr" type="number" inputmode="numeric" min="0" value="'+db.rd+'" onchange="db.rd=Math.max(0,parseInt(this.value)||0);save();render()"></div><p class="m">Ces réglages restent dans votre espace privé. Le téléphone sert à envoyer les messages directement par WhatsApp.</p>'+atBox()+bkBox()}
+,
+doc(){const o=db.orders.find(x=>x.id===docId);
+if(!o)return '<div class="card m">Commande introuvable.</div><button onclick="go(\'cmd\')">Retour aux commandes</button>';
+const c=db.clients.find(x=>x.id===o.cid)||{name:'Client'},dep=Math.min(paid(o),o.price),rest=o.price-dep,rc=docT==='r';
+return '<h2>'+(rc?'Reçu':'Devis')+'</h2><div class="chips np"><button class="chip'+(!rc?' on':'')+'" onclick="docT=\'d\';render()">Devis</button><button class="chip'+(rc?' on':'')+'" onclick="docT=\'r\';render()">Reçu</button></div>'
++(P()?payForm(o):'')
++'<div class="card"><div style="display:flex;justify-content:space-between;gap:8px"><div><b style="font:600 18px Georgia,serif">'+esc(db.at||'Mesure & Couture')+'</b>'+(db.atel?'<div class="m">Tél. +'+esc(db.atel)+'</div>':'')+'</div><div style="text-align:right"><b>'+(rc?'REÇU':'DEVIS')+'</b><div class="m">N° '+String(o.id).slice(-6)+'<br>'+o.date+'</div></div></div>'
++'<div class="row" style="margin-top:10px"><span class="m">Client</span><b>'+esc(c.name)+(c.tel?' · '+esc(c.tel):'')+'</b></div><div class="row"><span>'+MOD[o.model].n+'</span><b>'+fmt(o.price)+'</b></div>'+(o.note?'<div class="m">'+esc(o.note)+'</div>':'')+payRows(o)+'<div class="row"><span>Total payé</span><b>'+fmt(dep)+'</b></div><div class="row"><b>'+(rest?'Reste à payer':'Soldé')+'</b><b>'+fmt(rest)+'</b></div>'+(!rc&&+db.vd>0?'<p class="m">Devis valable jusqu\'au '+new Date(o.id+db.vd*864e5).toLocaleDateString('fr-FR')+'.</p>':'')+(db.cond?'<p class="m" style="white-space:pre-wrap">'+esc(db.cond)+'</p>':'')+'</div>'
++'<button class="p np" style="width:100%" onclick="window.print()">Imprimer / enregistrer en PDF</button><button class="np" style="width:100%;margin-top:8px" onclick="go(\'cmd\')">Retour aux commandes</button>'}
+,
+pat(){const pg=patPages(Ms(),mod);
+return '<div class="np"><h2>Patron grandeur nature</h2>'+who()+'<p class="m">Imprimez à 100 % sur du papier A4, sans « ajuster à la page ». Le carré de 10 cm de la première page sert à vérifier l\'échelle. Collez les pages bord à bord.</p><button class="p" style="width:100%" onclick="window.print()">Imprimer ('+pg.length+' pages A4)</button><button style="width:100%;margin:8px 0 12px" onclick="go(\'mod\')">Retour aux modèles</button></div>'+pg.join('')}
+,
+dash(){if(!P())return '<div class="card m">Disponible dans l\'espace professionnel.</div>';
+const cut=dp?Date.now()-dp*864e5:0,os=db.orders,inP=os.filter(o=>o.id>=cut),mon={},modes={},cnt={};
+let enc=0;const ca=inP.reduce((t,o)=>t+o.price,0);
+os.forEach(o=>pays(o).forEach(x=>{const t=pd(x.d),d=new Date(t),key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');mon[key]=(mon[key]||0)+x.a;if(t>=cut){enc+=x.a;modes[x.m]=(modes[x.m]||0)+x.a}}));
+const due=os.map(o=>({o:o,r:o.price-Math.min(paid(o),o.price)})).filter(x=>x.r>0).sort((a,b)=>b.r-a.r),dueT=due.reduce((t,x)=>t+x.r,0);
+inP.forEach(o=>cnt[o.model]=(cnt[o.model]||0)+1);
+const top=Object.keys(cnt).filter(k=>MOD[k]).sort((a,b)=>cnt[b]-cnt[a]).slice(0,5);
+const kp=(l,v)=>'<div class="card" style="margin:0"><div class="m">'+l+'</div><b style="font:600 17px Georgia,serif">'+v+'</b></div>';
+const now=new Date(),ms=[];for(let i=5;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1);ms.push([d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'),String(d.getMonth()+1).padStart(2,'0')+'/'+String(d.getFullYear()).slice(2)])}
+const mx=Math.max(1,...ms.map(a=>mon[a[0]]||0));
+const bars=ms.map((a,i)=>{const v=mon[a[0]]||0,h=Math.round(v/mx*90),x=14+i*50;return '<rect x="'+x+'" y="'+(110-h)+'" width="36" height="'+h+'" rx="3" fill="var(--ac)"/><text x="'+(x+18)+'" y="'+(104-h)+'" text-anchor="middle" style="font-size:10px">'+(v?(v>=1000?R(v/1000)+'k':v):'')+'</text><text x="'+(x+18)+'" y="128" text-anchor="middle" style="font-size:10px;fill:var(--mut)">'+a[1]+'</text>'}).join('');
+return '<h2>Tableau de bord</h2><div class="chips">'+[[7,'7 jours'],[30,'30 jours'],[365,'12 mois'],[0,'Tout']].map(a=>'<button class="chip'+(dp===a[0]?' on':'')+'" onclick="dp='+a[0]+';render()">'+a[1]+'</button>').join('')+'</div>'
++(os.length?'':'<div class="card m">Aucune donnée pour le moment. Les chiffres apparaissent dès la première commande.</div>')
++'<div class="g2" style="margin-bottom:10px">'+kp('Commandes passées',inP.length)+kp('Montant commandé',fmt(ca))+kp('Encaissé',fmt(enc))+kp('Reste à encaisser',fmt(dueT))+kp('Commandes en cours',os.filter(o=>o.step<4).length)+kp('Clients',db.clients.length)+'</div>'
++'<div class="card"><h2>Encaissements par mois</h2><svg viewBox="0 0 320 136" width="100%" role="img" aria-label="Encaissements par mois">'+bars+'</svg></div>'
++'<div class="card"><h2>Modèles les plus commandés</h2>'+(top.length?top.map(k=>'<div style="margin:6px 0"><div style="display:flex;justify-content:space-between"><span>'+MOD[k].n+'</span><b>'+cnt[k]+'</b></div><div style="height:6px;border-radius:3px;background:var(--bd)"><div style="height:6px;border-radius:3px;background:var(--tape);width:'+Math.round(cnt[k]/cnt[top[0]]*100)+'%"></div></div></div>').join(''):'<div class="m">Aucune commande sur la période.</div>')+'</div>'
++'<div class="card"><h2>Modes de paiement</h2>'+(Object.keys(modes).length?Object.keys(modes).map(k=>'<div class="row"><span>'+esc(k)+'</span><b>'+fmt(modes[k])+'</b></div>').join(''):'<div class="m">Aucun encaissement sur la période.</div>')+'</div>'
++'<div class="card"><h2>Plus gros soldes à encaisser</h2>'+(due.length?due.slice(0,5).map(x=>{const c=db.clients.find(q=>q.id===x.o.cid);return '<div class="row"><span>'+esc(c?c.name:'Client supprimé')+' · '+MOD[x.o.model].n+'</span><b>'+fmt(x.r)+'</b></div>'}).join(''):'<div class="m">Aucun solde à encaisser.</div>')+'</div>'}
+,
+stk(){if(!P())return '<div class="card m">Disponible dans l\'espace professionnel.</div>';
+let l=db.stock.slice();if(sf==='t')l=l.filter(x=>x.t==='t');if(sf==='f')l=l.filter(x=>x.t==='f');if(sf==='low')l=l.filter(low);
+l.sort((a,b)=>a.n.localeCompare(b.n));
+return '<h2>Stock</h2><div class="chips">'+[['all','Tout'],['t','Tissus'],['f','Fournitures'],['low','Stock bas']].map(a=>'<button class="chip'+(sf===a[0]?' on':'')+'" onclick="sf=\''+a[0]+'\';render()">'+a[1]+'</button>').join('')+'</div>'
++'<div class="card"><h2>Ajouter un article</h2><label for="sn">Nom</label><input id="sn" maxlength="60" placeholder="Ex. Bazin riche bleu"><div class="g2" style="margin-top:8px"><div><label for="st2">Type</label><select id="st2"><option>Tissu</option><option>Fourniture</option></select></div><div><label for="su">Unité</label><select id="su">'+SU.map(u=>'<option>'+u+'</option>').join('')+'</select></div><div><label for="sq">Quantité</label><input id="sq" type="number" inputmode="decimal" min="0" step="any" value="0"></div><div><label for="sm">Alerte (stock bas)</label><input id="sm" type="number" inputmode="decimal" min="0" step="any" value="0"></div></div><label for="sp" style="margin-top:8px">Prix par unité ('+esc(db.cur||'FCFA')+', facultatif)</label><input id="sp" type="number" inputmode="numeric" min="0"><button class="p" style="margin-top:10px;width:100%" onclick="stkAdd()">Ajouter</button></div>'
++(l.length?l.map(stkRow).join(''):'<div class="card m">Aucun article. Ajoutez votre premier tissu ou fourniture ci-dessus.</div>')}
+,
+ph(){const h='<h2>Essayage sur photo</h2>'+who()+'<p class="m">Choisissez une photo du client en entier, debout, de face, sur fond uni. La photo reste sur votre appareil et n\'est pas enregistrée.</p><div class="card"><label for="phf" class="m" style="display:block;border:1px dashed var(--bd);border-radius:8px;padding:10px;text-align:center;cursor:pointer">Choisir une photo<input id="phf" type="file" accept="image/*" style="display:none" onchange="phLoad()"></label>';
+if(!phImg)return h+'</div><button style="width:100%" onclick="go(\'mod\')">Retour aux modèles</button>';
+const n=phPts.length,st=n===0?'Touchez le sommet de la tête.':n===1?'Touchez les pieds, au sol.':n===2?'Aperçu prêt. Pour un meilleur ajustement : touchez l\'épaule gauche puis l\'épaule droite du client (facultatif).':n===3?'Touchez maintenant l\'autre épaule.':n===4?'Ajusté sur les épaules. Pour régler les hanches, touchez la hanche gauche puis la hanche droite (facultatif).':n===5?'Touchez maintenant l\'autre hanche.':'Ajusté sur les épaules et les hanches. Réglez les curseurs si besoin.';
+return h+'<p class="m" style="margin:8px 0 0"><b>'+st+'</b></p><canvas id="phc" style="width:100%;display:block;margin-top:8px;border-radius:8px;touch-action:manipulation"></canvas>'
++(phPts.length>1?'<label for="po" style="margin-top:8px">Opacité</label><input id="po" type="range" min="30" max="100" value="'+Math.round(phOp*100)+'" oninput="phOp=this.value/100;phDraw()"><label for="pd" style="margin-top:8px">Hauteur de l\'habit</label><input id="pd" type="range" min="-25" max="25" step=".5" value="'+phDy+'" oninput="phDy=+this.value;phDraw()"><label for="pw" style="margin-top:8px">Largeur</label><input id="pw" type="range" min="70" max="140" value="'+phSw+'" oninput="phSw=+this.value;phDraw()"><label for="px" style="margin-top:8px">Décalage horizontal</label><input id="px" type="range" min="-15" max="15" step=".5" value="'+phDx+'" oninput="phDx=+this.value;phDraw()">'
++'<label for="p2" style="margin-top:8px">Deuxième habit (facultatif)</label><select id="p2" onchange="phM2=this.value;phDraw()"><option value="">Aucun</option>'+CATS.filter(c=>c!==RT).map(c=>'<optgroup label="'+c+'">'+Object.keys(MOD).filter(k=>MOD[k].cat===c).map(k=>'<option value="'+k+'"'+(phM2===k?' selected':'')+'>'+MOD[k].n+'</option>').join('')+'</optgroup>').join('')+'</select>'
++'<div class="m" style="margin-top:8px">Motif du tissu</div><div class="chips">'+[['uni','Uni'],['ray','Rayures'],['poi','Pois'],['car','Carreaux'],['wax','Wax']].map(a=>'<button class="chip'+(phPat===a[0]?' on':'')+'" onclick="phPat=\''+a[0]+'\';render()">'+a[1]+'</button>').join('')+'</div>'
++'<div class="g2"><button onclick="phMul=!phMul;render()">'+(phMul?'Mode réaliste':'Mode opaque')+'</button><button onclick="phPts=[];phCx=null;phSw=100;phDy=0;phKb=null;phDx=0;phOut=\'\';render()">Recommencer</button></div><button style="width:100%;margin-top:8px" onclick="phPts.pop();if(phPts.length<4){phCx=null;phSw=100;phDy=0}if(phPts.length<6)phKb=null;phOut=\'\';render()">Annuler le dernier point</button><button class="p" style="width:100%;margin-top:8px" onclick="phSave()">Créer l\'image à enregistrer</button>':'')
++(phOut?'<img src="'+phOut+'" alt="Aperçu" style="width:100%;margin-top:8px;border-radius:8px"><button style="width:100%;margin-top:8px" onclick="phShare()">Partager l\'aperçu</button>':'')
++'</div><button style="width:100%" onclick="go(\'mod\')">Retour aux modèles</button>'}
+,
+help(){const S=[['Pour tous',[['Créer un profil','Dans Profil (ou Clients pour le pro), ajoutez le nom, le téléphone et, pour un enfant, son âge.'],['Saisir les mesures','Dans Mesures, remplissez les 8 mesures en centimètres et choisissez la silhouette du mannequin. Sans mesures, des mesures standard sont utilisées.'],['Choisir un modèle','Dans Modèles, choisissez une catégorie puis un modèle. Le mannequin 3D porte l\'habit à la taille du client : faites-le tourner et changez la couleur du tissu, de la broderie et le teint.'],['Essayer sur une photo','Le bouton Essayer sur une photo pose l\'habit sur la photo du client. La photo reste sur votre appareil.'],['Commander','Le client touche Envoyer à l\'atelier : un message avec sa commande et ses mesures est prêt à envoyer par WhatsApp ou autre.'],['Suivre sa commande','Dans Commandes, chaque commande a une étape, une date de livraison, une note et des photos. Le pro envoie l\'état au client par un message à coller dans Importer un message.']]],['Pour le pro',[['Recevoir une commande','Collez le message du client dans Clients, Importer un message : le client et la commande sont créés.'],['Faire avancer une commande','Dans Commandes, touchez Passer à l\'étape suivante. Modifiez le prix, ajoutez des photos et une date de livraison. Les rappels s\'affichent sur l\'Accueil.'],['Devis et reçus','Touchez Devis / reçu sur une commande, enregistrez les paiements (acompte, mode de paiement), puis imprimez ou enregistrez en PDF.'],['Patron et tissu','Dans Modèles, l\'espace pro affiche les calculs, les pièces à couper, le tissu estimé et le patron grandeur nature en pages A4 à assembler. Déduisez le tissu du stock.'],['Stock et tableau de bord','Stock : tissus et fournitures avec alerte de stock bas. Tableau de bord : montants commandés, encaissements, modèles les plus commandés et soldes à encaisser.'],['Sauvegarde','Dans Paramètres, créez une sauvegarde de vos clients et commandes et gardez-la en lieu sûr. Restaurez-la au besoin.']]],['À savoir',[['Données privées','Vos données sont privées et se synchronisent entre vos appareils. Elles ne sont partagées que par les messages que vous envoyez.'],['Langue','Dans Paramètres, choisissez Français, English, Español, Português ou العربية.'],['Limites','Le mannequin est une représentation : vérifiez les formules et les proportions sur un premier essai en tissu.']]]];return '<h2>Mode d\'emploi</h2>'+S.map(g=>'<div class="m" style="margin:12px 0 4px"><b>'+g[0]+'</b></div>'+g[1].map(a=>'<details class="card"><summary><b>'+a[0]+'</b></summary><p class="m" style="margin:8px 0 0">'+a[1]+'</p></details>').join('')).join('')}
+};
+function oHtml(o){const c=db.clients.find(x=>x.id===o.cid);
+return '<div class="card"><div class="row" style="border:0"><div><b>'+MOD[o.model].n+'</b><div class="m">'+esc(c?c.name:'Client supprimé')+' · '+o.date+'</div></div><b>'+fmt(o.price)+'</b></div><div class="dots">'+STEPS.map((s,i)=>'<i class="'+(i<=o.step?'d':'')+'"></i>').join('')+'</div><div class="m">Étape : '+STEPS[o.step]+'</div><div class="m">Payé : '+fmt(Math.min(paid(o),o.price))+' / '+fmt(o.price)+(paid(o)>=o.price?' · Soldé':'')+'</div>'+dueHtml(o)+noteHtml(o)+phHtml(o)+(P()&&o.step<4?'<button style="margin-top:8px;width:100%" onclick="nextS('+o.id+')">Passer à : '+STEPS[o.step+1]+'</button>':'')+(!P()?'<button style="margin-top:8px;width:100%" onclick="sendO('+o.id+')">Envoyer à l\'atelier</button>':'')+(P()?'<button style="margin-top:8px;width:100%" onclick="statO('+o.id+')">Envoyer l\'état au client</button>':'')+'<button style="margin-top:8px;width:100%" onclick="openD('+o.id+')">Devis / reçu</button></div>'}
+function draw(w1,w2,w3,h){
+const s=Math.min(230/h,170/Math.max(w1,w2,w3)),x=70,y=34,H=h*s,ym=y+H*.35;
+const pt=[[x,y],[x+w1*s,y],[x+w2*s,ym],[x+w3*s,y+H],[x,y+H]].map(a=>R(a[0])+','+R(a[1])).join(' ');
+const fx=x+14;
+return '<svg viewBox="0 0 380 '+Math.round(H+70)+'" width="100%" role="img" aria-label="Patron du devant avec mesures"><polygon points="'+pt+'" fill="var(--ac2)" stroke="var(--ac)" stroke-width="1.5"/><line x1="'+x+'" y1="'+ym+'" x2="'+(x+w2*s)+'" y2="'+ym+'" stroke="var(--mut)" stroke-dasharray="4 3"/><line x1="'+fx+'" y1="'+(y+H*.2)+'" x2="'+fx+'" y2="'+(y+H*.8)+'" stroke="var(--fg)" stroke-width="1.5"/><polygon points="'+fx+','+(y+H*.8+6)+' '+(fx-4)+','+(y+H*.8-2)+' '+(fx+4)+','+(y+H*.8-2)+'" fill="var(--fg)"/>'+
+'<text x="'+(x+w1*s/2)+'" y="'+(y-10)+'" text-anchor="middle">'+R(w1)+' cm</text><text x="'+(x+w2*s+6)+'" y="'+(ym+4)+'">'+R(w2)+' cm</text><text x="'+(x+w3*s/2)+'" y="'+(y+H+18)+'" text-anchor="middle">'+R(w3)+' cm</text><text x="'+(x-8)+'" y="'+(y+H/2)+'" text-anchor="end">'+R(h)+' cm</text><text x="'+(fx+8)+'" y="'+(y+H*.5)+'">droit-fil</text><text x="'+(x+4)+'" y="'+(y+H+34)+'">Devant · pli au centre</text></svg>'}
+function sm(p){const n=p.length;let d='M'+R(p[0][0])+','+R(p[0][1]);for(let i=0;i<n;i++){const a=p[(i+n-1)%n],b=p[i],c=p[(i+1)%n],e=p[(i+2)%n];d+='C'+R(b[0]+(c[0]-a[0])/6)+','+R(b[1]+(c[1]-a[1])/6)+' '+R(c[0]-(e[0]-b[0])/6)+','+R(c[1]-(e[1]-b[1])/6)+' '+R(c[0])+','+R(c[1])}return d+'Z'}
+function pg(p,a){return '<polygon points="'+p.map(q=>R(q[0])+','+R(q[1])).join(' ')+'" '+a+'/>'}
+function fab(){return '<div class="chips">'+['#27407a','#7a2e3b','#2f6b4f','#c9a227','#2b2b2b','#d9d2c3'].map(c=>'<button aria-label="Couleur du tissu '+c+'" style="width:44px;background:'+c+';border:3px solid '+(db.fab===c?'var(--tape)':'var(--bd)')+'" onclick="db.fab=\''+c+'\';save();render()"></button>').join('')+'</div>'}
+function mannequin(m,k){const GG=MOD[k].g;m=Object.assign({},m,{longueur:(m.hauteur||m.entrejambe/.46)*GG.lf});k={top:GG.e>10?'veste':'chemise',pants:'pantalon',skirt:'robe',dress:'robe',wide:'boubou',combo:'pantalon'}[GG.f];
+const H=m.hauteur||m.entrejambe/.46,s=440/H,cx=190,Y=f=>30+f*440,hw=c=>c/5.4*s,mr=a=>a.map(p=>[2*cx-p[0],p[1]]);
+const sh=m.epaules/2*s,yS=Y(.18),yC=Y(.26),yW=Y(.38),yH=Y(.48),yK=Y(.72),yA=Y(.97);
+const cH=hw(m.poitrine),wH=hw(m.taille),hH=hw(m.bassin),tH=m.cuisse*.16*s,lc=hH*.5;
+const B='fill="var(--bd)" stroke="var(--mut)" stroke-width="1" stroke-linejoin="round"',G='fill="'+db.fab+'" fill-opacity=".94" stroke="var(--fg)" stroke-opacity=".55" stroke-width="1" stroke-linejoin="round"';
+let o='<ellipse cx="190" cy="'+Y(1)+'" rx="95" ry="7" fill="var(--bd)"/>';
+[1,-1].forEach(g=>{
+o+='<path d="'+sm([[cx+g*hH*.95,Y(.46)],[cx+g*(lc+tH*.6),yK],[cx+g*(lc+tH*.35),yA],[cx+g*(lc-tH*.35),yA],[cx+g*(lc-tH*.6),yK],[cx+g*3,Y(.53)]])+'" '+B+'/>';
+const ax=cx+g*(sh-4),ex=cx+g*(sh+m.manche*s*.2),ey=yS+6+m.manche*s*.97;
+o+=pg([[ax-8,yS+6],[ax+8,yS+6],[ex+5,ey],[ex-5,ey]],B)});
+const R0=[[cx+14,Y(.14)],[cx+sh,yS+3],[cx+cH,yC],[cx+wH,yW],[cx+hH,yH],[cx+hH*.8,Y(.55)]];
+o+='<path d="'+sm(R0.concat(mr(R0).reverse()))+'" '+B+'/><rect x="'+(cx-9)+'" y="'+Y(.1)+'" width="18" height="'+(Y(.16)-Y(.1))+'" '+B+'/><ellipse cx="'+cx+'" cy="'+Y(.065)+'" rx="22" ry="28" '+B+'/>';
+const yh=Math.min(yS+m.longueur*s,Y(.99));
+const sl=(sw,cw)=>[1,-1].map(g=>{const x=cx+g*(sh+2),y=yS+2,ex=x+g*m.manche*s*.2,ey=y+m.manche*s*.97;return pg([[x-sw,y],[x+sw,y],[ex+cw,ey],[ex-cw,ey]],G)}).join('');
+const hm=(r,w)=>{const q=r.filter(p=>p[1]<yh-4).concat([[cx+w,yh]]);return pg(q.concat(mr(q).reverse()),G)};
+if(k==='chemise'||k==='veste'){const e=hw(k==='veste'?12:8);
+o+=sl(cH*.3+e/2,hw(20))+hm([[cx+12,yS-6],[cx+sh+2,yS+2],[cx+cH+e,yC],[cx+wH+e,yW],[cx+hH+e,yH]],hH+e)+'<line x1="'+cx+'" y1="'+(yS-2)+'" x2="'+cx+'" y2="'+yh+'" stroke="var(--fg)" stroke-opacity=".5"/>';
+}else if(k==='pantalon'){const yp=Math.min(yW+m.longueur*s,Y(.99)),wp=wH+hw(4),hp=hH+hw(6),hh=(tH+hw(4))*.6;
+o+=pg([[cx-wp,yW],[cx+wp,yW],[cx+hp,yH],[cx+lc+hh,yp],[cx+lc-hh,yp],[cx,Y(.54)],[cx-lc+hh,yp],[cx-lc-hh,yp],[cx-hp,yH]],G)+'<line x1="'+(cx-wp)+'" y1="'+(yW+9)+'" x2="'+(cx+wp)+'" y2="'+(yW+9)+'" stroke="var(--fg)" stroke-opacity=".5"/><line x1="'+cx+'" y1="'+yW+'" x2="'+cx+'" y2="'+Y(.54)+'" stroke="var(--fg)" stroke-opacity=".5"/>';
+}else if(k==='robe'){
+o+=hm([[cx+sh*.78,yS],[cx+cH+hw(4),yC],[cx+wH+hw(3),yW],[cx+hH+hw(6),yH]],hH+hw(20));
+}else{const bw=(m.bassin/2+16)*s/2;
+o+=sl(cH*.5,hw(34))+hm([[cx+12,yS-6],[cx+sh+4,yS+2],[cx+bw,yC+10]],bw);}
+return '<svg viewBox="0 0 380 500" width="100%" role="img" aria-label="Mannequin habillé aux mesures du client">'+o+'<text x="190" y="494" text-anchor="middle">Taille estimée ≈ '+Math.round(H)+' cm</text></svg>'}
+let ry3=0,ty3=0;
+function view3(a){ty3=a+Math.PI*2*Math.round((ry3-a)/(Math.PI*2))}
+function sub(s,n){s=s.map(q=>[q[0],q[1],q[2],q[3]||0]);const o=[];for(let i=0;i<s.length-1;i++){const a=s[Math.max(i-1,0)],b=s[i],c=s[i+1],d=s[Math.min(i+2,s.length-1)];for(let t=0;t<n;t++){const u=t/n,u2=u*u,u3=u2*u;o.push([0,1,2,3].map(j=>.5*(2*b[j]+(c[j]-a[j])*u+(2*a[j]-5*b[j]+4*c[j]-d[j])*u2+(3*b[j]-a[j]-3*c[j]+d[j])*u3)))}}o.push(s[s.length-1]);return o}
+function loft(sec,cx,rip){const s=sub(sec,5),N=rip?72:28,pos=[],idx=[];
+s.forEach(q=>{const fr=rip?1+rip[1]*Math.max(0,Math.min(1,(rip[2]-q[0])/15)):0;for(let i=0;i<N;i++){const a=i/N*Math.PI*2,f=rip?1+(fr-1)*Math.cos(rip[0]*a):1;pos.push((cx||0)+Math.cos(a)*Math.max(.3,q[1])*f,q[0],(q[3]||0)+Math.sin(a)*Math.max(.3,q[2])*f)}});
+for(let j=0;j<s.length-1;j++)for(let i=0;i<N;i++){const a=j*N+i,b=j*N+(i+1)%N;idx.push(a,a+N,b,b,a+N,b+N)}
+const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setIndex(idx);g.computeVertexNormals();g.sec=s;g.cx=cx||0;return g}
+function build3(m,k,age,sx){
+const H=m.hauteur||m.entrejambe/.46,ag=+age>=1&&+age<16?+age:16,hf=.13+(16-ag)*.005,ff=f=>f<.13?f*hf/.13:hf+(f-.13)*(1-hf)/.87,Y=f=>H*(1-ff(f)),kk=Math.min(1,H/170),rr=c=>c/5.4,sh=m.epaules/2,cr=rr(m.poitrine),wr=rr(m.taille),hr=rr(m.bassin),tr=m.cuisse/6.28,lc=hr*.5,it=[];
+const BP=sx==='f'?{zb:2.2,kc:.8,kw:.7,kh:.8,zg:-1.3}:sx==='h'?{zb:.8,kc:.78,kw:.74,kh:.74,zg:-.5}:{zb:1.4,kc:.79,kw:.72,kh:.77,zg:-.8};
+const add=(g,o)=>it.push(Object.assign({g:g},o));
+const hem=(sc,yh,ex)=>{const q=sc.filter(p=>p[0]>yh+.5),L=q[q.length-1];q.push([yh,L[1]+ex,L[2]+ex*.8,L[3]||0]);return q};
+const nr=Math.max(2.6,m.poitrine*.054),A0=Math.max(2.2,Math.min(6,m.poitrine*.045)),ry=H*hf/2,len=m.manche;
+add(loft([[Y(.1),nr,nr],[Y(.145),nr*1.1,nr*1.05],[Y(.165),sh*.8,7],[Y(.18),sh,6.6],[Y(.225),sh*.93,cr*BP.kc*.9,.5],[Y(.265),cr,cr*BP.kc,BP.zb],[Y(.31),cr*.95,cr*BP.kc*.9,BP.zb*.5],[Y(.38),wr,wr*BP.kw],[Y(.43),(wr+hr)/2,hr*BP.kh*.9,BP.zg*.4],[Y(.48),hr,hr*BP.kh,BP.zg],[Y(.53),hr*.8,hr*BP.kh*.8,BP.zg*.7],[Y(.545),.5,.5]]));
+add(loft([[Y(.09),nr*.95,nr*.95],[Y(.15),nr,nr]]));
+add(new THREE.SphereGeometry(1,24,16),{p:[0,Y(.065)],s:[ry*.77,ry,ry*.86]});
+add(new THREE.SphereGeometry(1,24,12,0,Math.PI*2,0,Math.PI*.56),{gm:5,p:[0,Y(.065)+ry*.04,-ry*.06],s:[ry*.8,ry*1.04,ry*.92]});
+add(new THREE.SphereGeometry(1,12,8),{p:[0,Y(.07),ry*.84],s:[1.3*kk,1.6*kk,2*kk]});
+[1,-1].forEach(g=>{
+add(loft([[Y(.46),tr*1.18,tr*1.12],[Y(.57),tr,tr],[Y(.66),tr*.78,tr*.78],[Y(.72),tr*.62,tr*.64],[Y(.79),tr*.62,tr*.66],[Y(.84),tr*.6,tr*.64],[Y(.92),tr*.42,tr*.45],[Y(.965),tr*.34,tr*.36],[Y(.975),.3,.3]],g*lc));
+add(new THREE.SphereGeometry(1,12,8),{p:[g*lc,H*.02,H*.04],s:[H*.026,H*.02,H*.07]});
+const px=g*(sh-2.5),py=Y(.18)-1;
+add(loft([[0,A0*1.05,A0],[-len*.3,A0,A0*.97],[-len*.55,A0*.82,A0*.8],[-len*.8,A0*.72,A0*.7],[-len,A0*.55,A0*.5],[-len-1.5,A0*.45,A0*.42]]),{p:[px,py],rz:g*.2});
+add(new THREE.SphereGeometry(1,12,8),{p:[px,py],s:[A0*1.25,A0*1.25,A0*1.2]});
+add(new THREE.SphereGeometry(1,12,8),{p:[px+g*(len+3)*.1987,py-(len+3)*.98],s:[A0*.7,A0*1.5,A0*.5]})});
+const dress=G=>{const L=H*G.lf,top0=G.st?Y(.25):Y(.18),yh=Math.max(top0-L,1),fx=G.fl||0,e=rr(G.e||0),u=Math.max(.5,kk);
+const arm=(r0,r1,l)=>loft([[0,r0,r0],[-l*.5,(r0+r1)/2,(r0+r1)/2],[-l,r1,r1]]);
+const sl=(r0,r1,l,cuff)=>{if(l>0)[1,-1].forEach(g=>{const o={p:[g*(sh-2.5),Y(.18)-1],rz:g*.2};add(arm(r0,r1,l),Object.assign({gm:1},o));if(cuff)add(loft([[-l+3,r1+.4,r1+.4],[-l,r1+.4,r1+.4]]),Object.assign({gm:2},o))})};
+const band=(y1,y2,rx,rz,zo)=>add(loft([[y1,rx,rz,zo||0],[y2,rx,rz,zo||0]]),{gm:2});
+const shellAt=(q,y)=>{for(let i=1;i<q.length;i++){const a=q[i-1],b=q[i];if(y<=a[0]+1e-9&&y>=b[0]-1e-9){const t=(a[0]-y)/((a[0]-b[0])||1);return{rx:a[1]+(b[1]-a[1])*t,rz:a[2]+(b[2]-a[2])*t,zo:(a[3]||0)+((b[3]||0)-(a[3]||0))*t}}}const z=q[q.length-1];return{rx:z[1],rz:z[2],zo:z[3]||0}};
+let SH=[];
+const sp=(x,y)=>{const c=shellAt(SH,y),t=Math.max(-.96,Math.min(.96,x/c.rx));return{z:c.zo+c.rz*Math.sqrt(1-t*t),n:Math.asin(t)}};
+const patch=(x,y,w,h,t,gm,rz)=>{const q=sp(x,y);add(new THREE.BoxGeometry(1,1,1),{gm:gm||2,p:[x,y,q.z+t*.5-.05],s:[w,h,t],ry:q.n,rz:rz||0})};
+const strip=(x,y1,y2,w,t,gm,rz)=>{const n=Math.max(1,Math.ceil((y1-y2)/5)),h=(y1-y2)/n;for(let i=0;i<n;i++)patch(x,y1-h*(i+.5),w,h+.15,t,gm,rz)};
+const btn=()=>{const n=G.bt||0;if(!n)return;const y1=Y(.21),y2=yh+7;strip(0,y1,y2,2.6*u,.3,2);for(let i=0;i<n;i++){const y=y1-(y1-y2)*(i/Math.max(1,n-1)),q=sp(0,y);add(new THREE.SphereGeometry(1,8,6),{gm:3,p:[0,y,q.z+.7],s:[.8*u+.3,.8*u+.3,.5]})}};
+const hemRing=q=>{const z=q[q.length-1];band(z[0]+1.3,z[0],z[1]+.25,z[2]+.25,z[3]||0)};
+const emb=()=>{if(G.em)strip(0,Y(.16),Y(G.em===3?.34:.31),(G.em===3?3.4:6)*u,.45,2)};
+const sideStrip=(y1,y2,w,t,gm)=>{const n=Math.max(1,Math.ceil((y1-y2)/5)),h=(y1-y2)/n;[1,-1].forEach(g=>{for(let i=0;i<n;i++){const ym=y1-h*(i+.5),c=shellAt(SH,ym);patch(g*c.rx*.95,ym,w,h+.15,t,gm,0)}})};
+const tp=()=>G.st?[[Y(.25),cr+e,(cr+e)*BP.kc+.4,BP.zb]]:[[Y(.15),nr+1,nr+1],[Y(.18),sh+.5,7.2],[Y(.225),sh*.93+e*.5+.6,(cr+e)*BP.kc*.92+.5,BP.zb*.5],[Y(.265),cr+e+.3,(cr+e)*BP.kc+.7,BP.zb]];
+const ds=()=>{const q=G.st?[[Y(.25),cr+1.2,(cr+1.2)*BP.kc+.5,BP.zb]]:[[Y(.15),nr+1.2,nr+1.2],[Y(.18),sh*.78,7.2],[Y(.265),cr+1.2,(cr+1.2)*BP.kc+.6,BP.zb]];
+if(G.emp)q.push([Y(.30),cr*.84,cr*.84*BP.kc+.4,BP.zb*.5],[Y(.38),wr+3,(wr+3)*BP.kw+.5]);else q.push([Y(.38),wr+.8,(wr+.8)*BP.kw+.5]);
+q.push([Y(.48),hr+1.5,(hr+1.5)*BP.kh+.5,BP.zg]);if(G.bl)q.push([Y(.58),hr+G.bl,(hr+G.bl)*BP.kh,BP.zg]);if(G.mer)q.push([Y(.68),hr*.78,hr*.6,BP.zg*.5]);if(!G.bl&&!G.mer)q.push([Y(.8),hr+1.5,(hr+1.5)*BP.kh+.5,BP.zg]);return q};
+const legs=yp=>{const ym=(Y(.50)+yp)/2,pe=G.pe==null?.8:G.pe,mw=G.mw||.8,lw=G.lw||.5;
+[1,-1].forEach(g=>add(loft([[Y(.50),tr*1.2+pe,tr*1.2+pe],[ym,tr*mw+pe,tr*mw+pe],[yp,tr*lw+.9,tr*lw+.9]],g*lc),{gm:1}))};
+const wband=y0=>{band(y0+1.5,y0-3.5,wr+1.5,(wr+1.5)*BP.kw+.8);[-75,-40,40,75].forEach(a=>{const r=a*Math.PI/180,rx=wr+1.5,rz=(wr+1.5)*BP.kw+.8;add(new THREE.BoxGeometry(1,1,1),{gm:2,p:[rx*Math.sin(r),y0,rz*Math.cos(r)+.35],s:[1.1,6,.5],ry:r})})};
+const rp=G.rp||(G.f==='wide'?[8,.02]:null);
+if(G.f==='top'){const gs=tp().concat([[Y(.38),wr+e,(wr+e)*BP.kw+.6],[Y(.48),hr+e,(hr+e)*BP.kh+.6,BP.zg],[Y(.8),hr+e,(hr+e)*BP.kh+.6,BP.zg]]),hl=hem(gs,yh,0);SH=sub(hl,5);
+add(loft(hl),{gm:1});hemRing(hl);sl(cr*.3+e,3.3+e*.5,len*(G.s||0),G.s>=.8);
+if(G.col&&!G.st)band(Y(.115),Y(.15),nr+1.7,nr+1.7);
+if(G.pk==='c')patch(cr*.45,Y(.30),8*u,9*u,.6,2);
+if(G.pk==='h2')[1,-1].forEach(g=>patch(g*hr*.6,yh+13*u,10*u,1.6,.7,2));
+if(G.lap)[1,-1].forEach(g=>strip(g*4,Y(.17),Y(.30),5,.55,2,g*.2));
+btn();emb();if(G.nk)band(Y(.143),Y(.158),nr+1.5,nr+1.5);if(G.slit)sideStrip(yh+G.slit,yh,1,.4,2)}
+else if(G.f==='pants'){const y0=Y(.38),pl=[[y0,wr+1,(wr+1)*BP.kw+.5],[Y(.48),hr+1.2,(hr+1.2)*BP.kh+.5,BP.zg],[Y(.54),hr*.9,hr*.7,BP.zg*.5]];SH=sub(pl,5);
+add(loft(pl),{gm:1});if(!G.hid)wband(y0);legs(Math.min(Math.max(y0-L,1),Y(.50)-4));
+if(!G.hid){[1,-1].forEach(g=>patch(g*hr*.62,y0-9,1.1,11,.5,2,-g*.3));patch(0,y0-9,.8,12,.4,2);
+add(new THREE.SphereGeometry(1,8,6),{gm:3,p:[0,y0,sp(0,y0).z+.8],s:[1,1,.5]});
+if(G.dr)[1,-1].forEach(g=>patch(g*1.6,y0-7,.6,9,.5,3))}}
+else if(G.f==='combo'){const cl=tp().concat([[Y(.38),wr+2,(wr+2)*BP.kw+.5],[Y(.48),hr+2,(hr+2)*BP.kh+.5,BP.zg],[Y(.54),hr*.9,hr*.7,BP.zg*.5]]);SH=sub(cl,5);
+add(loft(cl),{gm:1});legs(Math.min(yh,Y(.50)-4));sl(cr*.3+1.5,3.4,len*(G.s||0),false)}
+else if(G.f==='skirt'){const y0=Y(.38),q=[[y0,wr+.8,(wr+.8)*BP.kw+.5],[Y(.48),hr+1.5,(hr+1.5)*BP.kh+.5,BP.zg]];
+if(G.bl)q.push([Y(.58),hr+G.bl,(hr+G.bl)*BP.kh,BP.zg]);if(G.mer)q.push([Y(.68),hr*.78,hr*.6,BP.zg*.5]);if(!G.bl&&!G.mer)q.push([Y(.8),hr+1.5,(hr+1.5)*BP.kh+.5,BP.zg]);
+const hl=hem(q,Math.max(y0-L,1),fx*.6);SH=sub(hl,5);add(loft(hl,0,rp?[rp[0],rp[1],y0]:null),{gm:1});wband(y0);hemRing(hl)}
+else if(G.f==='dress'){const hl=hem(ds(),yh,fx*.6);SH=sub(hl,5);
+add(loft(hl,0,rp?[rp[0],rp[1],Y(.40)]:null),{gm:1});hemRing(hl);sl(cr*.3+1,3.5,len*(G.s||0),false);
+if(G.belt==1)band(Y(.38)+2,Y(.38)-2,wr+1.8,(wr+1.8)*BP.kw+1);if(G.belt==2)band(Y(.30)+1.5,Y(.30)-1.5,cr*.84+.9,cr*.84*BP.kc+1.2,BP.zb*.5);btn()}
+else{const bw=(m.bassin/2+G.bw)/2,hl=hem([[Y(.15),nr+2,nr+2],[Y(.18),sh+1.5,8],[Y(.265),bw*.8,bw*.55,BP.zb*.5],[Y(.46),bw,bw*.6],[Y(.8),bw,bw*.6]],yh,0);SH=sub(hl,5);
+add(loft(hl,0,[rp[0],rp[1],Y(.30)]),{gm:1});hemRing(hl);sl(cr*.4+3,14,len*(G.s||0),false);band(Y(.12),Y(.155),nr+2.3,nr+2.3);emb()}
+};(MOD[k].gs||[MOD[k].g]).forEach(dress);
+return it}
+function setup3d(){
+const el=$('c3');if(!el)return;
+const m=Ms(),k=mod,H=m.hauteur||m.entrejambe/.46;let r=null;
+try{r=new THREE.WebGLRenderer({antialias:true,alpha:true})}catch(e){r=null}
+const fb=()=>{try{if(r)r.dispose()}catch(x){}el.innerHTML=mannequin(m,k)+'<p class="m" style="margin:6px 0 0">'+T('Mannequin 3D indisponible sur cet appareil : dessin de face affiché. Utilisez Essayer sur une photo pour une vue plus réaliste.')+'</p>';const b=$('v3b');if(b)b.style.display='none'};
+if(!r){fb();return}
+try{
+const W=el.clientWidth||340,Ht=400;
+r.setSize(W,Ht);r.setPixelRatio(Math.min(window.devicePixelRatio||1,2));el.appendChild(r.domElement);
+const cv=r.domElement;cv.style.cssText='width:100%;height:auto;display:block;touch-action:pan-y';
+const sc=new THREE.Scene(),cam=new THREE.PerspectiveCamera(30,W/Ht,1,2000);
+cam.position.set(0,H*.5,H*2.35);cam.lookAt(0,H*.5,0);
+sc.add(new THREE.AmbientLight(0xffffff,.8));const dl=new THREE.DirectionalLight(0xffffff,.7);dl.position.set(80,H*1.6,200);sc.add(dl);
+const grp=new THREE.Group();sc.add(grp);
+const mt=(c,r)=>new THREE.MeshStandardMaterial({color:c,roughness:r,side:THREE.DoubleSide}),bm=mt(db.sk||'#b98a6a',.8),gm=mt(db.fab,.7),tm=mt((db.tc&&db.tc!=='auto')?db.tc:shade(db.fab),.6),btm=mt('#e8e2d4',.3),hm=mt('#2a1d14',.9);
+build3(m,k,(C()||{}).age,(C()||{}).sx).forEach(t=>{const me=new THREE.Mesh(t.g,t.gm===2?tm:t.gm===3?btm:t.gm===5?hm:t.gm?gm:bm);if(t.p)me.position.set(t.p[0],t.p[1],t.p[2]||0);if(t.ry)me.rotation.y=t.ry;if(t.rz)me.rotation.z=t.rz;if(t.s)me.scale.set(t.s[0],t.s[1],t.s[2]);grp.add(me)});
+let dr=null;
+cv.onpointerdown=e=>{dr=e.clientX;cv.setPointerCapture(e.pointerId)};
+cv.onpointermove=e=>{if(dr!==null){ry3+=(e.clientX-dr)*.012;ty3=ry3;dr=e.clientX}};
+cv.onpointerup=cv.onpointercancel=()=>{dr=null};
+(function tick(){if(!el.isConnected){r.dispose();return}try{if(dr===null)ry3+=(ty3-ry3)*.15;grp.rotation.y=ry3;r.render(sc,cam)}catch(x){fb();return}requestAnimationFrame(tick)})()}catch(e){fb()}}
+function addC(){const n=$('cn').value.trim();if(!n){err='Entrez un nom pour ajouter un client.';render();return}
+const c={id:Date.now(),name:n,tel:$('ct').value.trim()};const ag=Math.round(+$('ca').value);if(ag>=1&&ag<16)c.age=ag;db.clients.push(c);db.cid=c.id;save();wr('clients/'+c.id,c);err='';msg=n+' ajouté. Saisissez maintenant ses mesures.';tab='mes';render()}
+function pick(id){db.cid=id;save();render()}
+function delC(id){db.clients=db.clients.filter(c=>c.id!==id);if(db.cid===id)db.cid=null;save();rm('clients/'+id);render()}
+function saveM(){const m={};for(const k of MS){const v=parseFloat($('m_'+k[0]).value);if(!(v>0)){err='Renseignez toutes les mesures en centimètres : '+k[1]+' manque ou est invalide.';render();return}m[k[0]]=v}
+C().m=m;save();wr('clients/'+C().id,C());err='';msg='Mesures enregistrées. Voici l\'habit sur le mannequin de '+C().name+'.';tab='mod';render()}
+function order(k){if(!C()){err='Choisissez d\'abord un client.';tab='cli';render();return}
+db.orders.unshift({id:Date.now(),cid:db.cid,model:k,price:priceOf(k),step:0,date:new Date().toLocaleDateString('fr-FR')});save();wr('orders/'+db.orders[0].id,db.orders[0]);msg='Commande créée.';tab='cmd';render()}
+function nextS(id){const o=db.orders.find(x=>x.id===id);if(o&&o.step<4){o.step++;save();wr('orders/'+o.id,o);render()}}
+let pf='',shr=null;
+const APP=(/^https?:$/.test(location.protocol)&&!/claude|anthropic/i.test(location.hostname))?location.href.split('#')[0]:'https://claude.ai/artifact/PuPk97wgjfoHf4e4q5UCZ1';
+const dk=p=>{const a=p.split('/');return pf+(a[0]==='clients'?'c-':a[0]==='stock'?'s-':'o-')+a[1]};
+function off(){rdb=null;$('sy').dataset.f='Données sur cet appareil seulement (accès en lecture seule).';render()}
+function wr(p,d){if(!rdb)return;try{rdb.doc(dk(p)).set(d).catch(off)}catch(e){}}
+function rm(p){if(!rdb)return;try{rdb.doc(dk(p)).delete().catch(()=>{})}catch(e){}}
+const cs=o=>JSON.stringify(o,(k,v)=>v&&typeof v==='object'&&!Array.isArray(v)?Object.keys(v).sort().reduce((r,x)=>(r[x]=v[x],r),{}):v);
+const cfg=()=>({prices:db.prices,width:db.width,shrink:db.shrink,fab:db.fab,at:db.at,cur:db.cur,atel:db.atel,vd:db.vd,cond:db.cond,rd:db.rd});
+function sset(){if(!rdb||!sr)return;const s=JSON.stringify(cfg());if(s===lastS)return;lastS=s;try{rdb.doc(pf+'settings').set(JSON.parse(s)).catch(off)}catch(e){}}
+function refresh(){const a=document.activeElement;if(a&&['INPUT','SELECT','TEXTAREA'].indexOf(a.tagName)>-1)return;render()}
+const enc=o=>'MC1:'+btoa(unescape(encodeURIComponent(JSON.stringify(o))));
+const TA='width:100%;box-sizing:border-box;font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:9px';
+function shareC(id){const c=db.clients.find(x=>x.id===id);if(!c)return;
+if(!c.m){err='Enregistrez d\'abord les mesures de '+c.name+' avant de partager sa fiche.';render();return}
+shr={name:c.name,txt:'Ma fiche Mesure & Couture. Ouvrez '+APP+' puis, dans Clients, collez ce message dans « Importer un message ».\n'+enc({n:c.name,t:c.tel||'',m:c.m,k:mod,a:c.age||'',x:c.sx||''})};render()}
+function shareBox(){if(!shr)return '';return '<div class="card"><h2>'+esc(shr.title||'Partager la fiche de '+shr.name)+'</h2><p class="m" style="margin:0 0 6px">Toute personne qui reçoit ce message peut lire ces mesures. Envoyez-le seulement à qui vous voulez.</p><textarea id="sc2" readonly rows="4" style="'+TA+'" aria-label="Message à partager">'+esc(shr.txt)+'</textarea><div class="g2" style="margin-top:8px"><button class="p" onclick="cpy()">Copier</button><button onclick="snd()">Envoyer</button></div>'+(shr.wa&&shr.wa.length>=6?'<a href="https://wa.me/'+shr.wa+'?text='+encodeURIComponent(T(shr.txt))+'" target="_blank" rel="noopener" style="display:block;margin-top:8px;text-align:center;padding:10px;border:1px solid var(--bd);border-radius:8px;color:var(--ac);text-decoration:none;font-weight:600">Ouvrir dans WhatsApp</a>':'')+'</div>'}
+function impBox(){return '<div class="card"><h2>Importer un message</h2><p class="m" style="margin:0 0 6px">Collez un message reçu : fiche, commande ou état de commande.</p><textarea id="ic" rows="3" style="'+TA+'" aria-label="Message de fiche à importer"></textarea><button style="margin-top:8px;width:100%" onclick="impC()">Importer</button></div>'}
+function cpy(){const t=$('sc2');t.select();let ok=false;try{ok=document.execCommand('copy')}catch(e){}
+if(ok){msg='Message copié.';err=''}else{err='Copie impossible ici : touchez le texte, sélectionnez-le puis copiez-le.'}render()}
+function snd(){if(navigator.share)navigator.share({text:T(shr.txt)}).catch(()=>{});else cpy()}
+function impC(){const t=($('ic').value||'').match(/MC1:([A-Za-z0-9+/=]+)/);
+if(!t){err='Aucun code de fiche trouvé dans ce texte.';render();return}
+let o;try{o=JSON.parse(decodeURIComponent(escape(atob(t[1]))))}catch(e){err='Code illisible ou incomplet.';render();return}
+if(o&&o.u){applyU(o);return}
+const mm=Object.assign({},o.m||{});if(!(+mm.hauteur>0)&&+mm.entrejambe>0)mm.hauteur=Math.round(mm.entrejambe/.46);const m={};let okm=true;for(const k of MS){const v=+mm[k[0]];if(v>0&&v<300)m[k[0]]=v;else{okm=false;if(!(MOD[o.k]&&MOD[o.k].ret)){err='Fiche invalide : la mesure « '+k[1]+' » manque ou est incorrecte.';render();return}}}
+const nm=String(o.n||'').slice(0,60)||'Client importé',tel=String(o.t||'').slice(0,30);
+let c=db.clients.find(x=>x.name.toLowerCase()===nm.toLowerCase()&&(x.tel||'')===tel);
+if(c){if(okm)c.m=m}else{c={id:Date.now(),name:nm,tel:tel};if(okm)c.m=m;db.clients.push(c)}
+if(+o.a>=1&&+o.a<16)c.age=+o.a;if(o.x==='f'||o.x==='h')c.sx=o.x;db.cid=c.id;if(MOD[o.k]&&!MOD[o.k].ret)mod=o.k;if(/^#[0-9a-f]{6}$/i.test(o.f||''))db.fab=o.f;
+save();wr('clients/'+c.id,c);err='';
+if(MOD[o.k]&&o.p!==undefined){const od={id:Date.now()+1,cid:c.id,model:o.k,price:Math.max(0,+o.p||db.prices[o.k]),step:0,ref:+o.i||0,date:new Date().toLocaleDateString('fr-FR')};if(/^\d{4}-\d{2}-\d{2}$/.test(o.l||''))od.due=o.l;if(o.z)od.note=String(o.z).slice(0,200);db.orders.unshift(od);save();wr('orders/'+od.id,od);msg='Commande reçue de '+c.name+' : '+MOD[o.k].n+'.';tab='cmd'}else{msg='Fiche de '+c.name+' importée.';tab='mod'}
+render()}
+const EN=`Aucun atelier enregistré. Ajoutez celui de votre couturier dans Paramètres.|No workshop saved yet. Add your tailor's workshop in Settings.
+Ajouter un atelier|Add a workshop
+>Atelier<|>Workshop<
+Mes ateliers|My workshops
+Aucun atelier enregistré.|No workshop saved yet.
+Code de l'atelier|Workshop code
+Ajouter cet atelier|Add this workshop
+Inviter des clients|Invite clients
+Créez un code avec le nom, le téléphone et les prix de votre atelier. Vos clients l'ajoutent pour vous envoyer leurs commandes.|Create a code with your workshop's name, phone and prices. Your clients add it to send you their orders.
+Créer le code atelier|Create the workshop code
+Renseignez d'abord le nom et le téléphone de l'atelier ci-dessus.|First fill in the workshop name and phone above.
+Code de l'atelier invalide ou incomplet.|Invalid or incomplete workshop code.
+Atelier « |Workshop « 
+ » ajouté. Créez votre profil pour commander.| » added. Create your profile to order.
+ » ajouté.| » added.
+Bonjour ! Voici l'application de |Hello! Here is the app of 
+. Ouvrez ce lien : l'atelier s'ajoute tout seul. |. Open this link: the workshop is added automatically. 
+. Ouvrez l'application, puis Paramètres, Code de l'atelier, et collez ce message. |. Open the app, then Settings, Workshop code, and paste this message. 
+Décalage horizontal|Horizontal shift
+Ajusté sur les épaules. Pour régler les hanches, touchez la hanche gauche puis la hanche droite (facultatif).|Fitted to the shoulders. To adjust the hips, tap the left hip then the right hip (optional).
+Touchez maintenant l'autre hanche.|Now tap the other hip.
+Ajusté sur les épaules et les hanches. Réglez les curseurs si besoin.|Fitted to the shoulders and hips. Adjust the sliders if needed.
+Aperçu prêt. Pour un meilleur ajustement : touchez l'épaule gauche puis l'épaule droite du client (facultatif).|Preview ready. For a better fit: tap the client's left shoulder, then the right shoulder (optional).
+Touchez maintenant l'autre épaule.|Now tap the other shoulder.
+Ajusté sur les épaules. Réglez les curseurs si besoin.|Fitted to the shoulders. Adjust the sliders if needed.
+Annuler le dernier point|Undo last point
+Deuxième habit (facultatif)|Second garment (optional)
+>Aucun<|>None<
+Motif du tissu|Fabric pattern
+>Uni<|>Plain<
+>Rayures<|>Stripes<
+>Pois<|>Dots<
+>Carreaux<|>Checks<
+>Wax<|>Wax print<
+Espace client|Client area
+Espace professionnel|Professional area
+Paramètres|Settings
+Accueil|Home
+>Profil<|>Profile<
+Mesures enregistrées. Voici l'habit sur le mannequin de |Measurements saved. Here is the garment on the mannequin of 
+Mesures|Measurements
+Modèles d'habit|Garment models
+Modèles|Models
+Commandes en cours|Orders in progress
+Commandes|Orders
+Prix|Prices
+Données sur cet appareil seulement (accès en lecture seule).|Data on this device only (read-only access).
+Données sur cet appareil seulement.|Data on this device only.
+Vos données sont privées et synchronisées entre vos appareils.|Your data is private and synced across your devices.
+Nouveau client|New client
+Mon profil|My profile
+Clients existants|Existing clients
+Changer de profil|Switch profile
+Nouvelle commande|New order
+Aucune commande en cours. Créez-en une depuis Commandes.|No orders in progress. Create one from Orders.
+Dernières commandes|Latest orders
+Aucune commande pour le moment.|No orders yet.
+Client actif : |Active client : 
+Aucun client actif. Mesures standard utilisées.|No active client. Standard measurements used.
+Nom complet|Full name
+Téléphone|Phone
+>Ajouter<|>Add<
+Importer un message|Import a message
+Collez un message reçu : fiche, commande ou état de commande.|Paste a received message: profile, order or order status.
+>Importer<|>Import<
+Aucun client. Ajoutez le premier ci-dessus.|No clients yet. Add the first one above.
+Sans téléphone|No phone
+>Actif<|>Active<
+>Choisir<|>Select<
+>Partager<|>Share<
+>Suppr.<|>Delete<
+aria-label="Supprimer"|aria-label="Delete"
+Choisissez ou créez un client pour enregistrer ses mesures.|Select or create a client to save their measurements.
+Ajouter un client|Add a client
+Créer mon profil|Create my profile
+Enregistrer les mesures|Save measurements
+Taille estimée ≈|Estimated height ≈
+Poitrine|Chest
+poitrine|chest
+Taille|Waist
+Bassin|Hip
+bassin|hip
+Épaules|Shoulders
+Cuisse|Thigh
+Manches|Sleeves
+Manche|Sleeve
+Entrejambe|Inseam
+Longueur|Length
+Emmanchure|Armhole
+Encolure|Neckline
+Hanches|Hips
+Largeur du panneau|Panel width
+Panneau ×|Panel ×
+Devant ×|Front ×
+Dos ×|Back ×
+Col ×|Collar ×
+Ceinture|Waistband
+Devant · pli au centre|Front · fold at center
+droit-fil|grain line
+Sur le mannequin|On the mannequin
+Glissez sur le mannequin pour le tourner en 3D.|Drag on the mannequin to rotate it in 3D.
+>Face<|>Front<
+>Dos<|>Back<
+Mannequin aux mesures standard : enregistrez des mesures pour l'adapter|Mannequin with standard measurements: save measurements to adapt it
+Mannequin aux mesures de |Mannequin with the measurements of 
+Envoyer à l'atelier : |Send to the workshop : 
+Envoyer à l'atelier|Send to the workshop
+Couleur du tissu|Fabric color
+Calculs|Calculations
+<h2>Tissu</h2>|<h2>Fabric</h2>
+Tissu estimé|Estimated fabric
+Largeur du tissu (cm)|Fabric width (cm)
+Rétrécissement (%)|Shrinkage (%)
+Pièces à couper|Pieces to cut
+Une pièce dépasse la largeur du tissu : coupez-la en deux parties.|A piece is wider than the fabric: cut it in two parts.
+Imprimer le patron|Print the pattern
+Pantalon|Trousers
+Chemise|Shirt
+Veste / costume|Jacket / suit
+Robe|Dress
+Étape : |Stage : 
+Passer à : |Move to : 
+Coupe|Cutting
+Couture|Sewing
+Finition|Finishing
+Livrée|Delivered
+>Livrées<|>Delivered<
+>Toutes<|>All<
+>En cours<|>In progress<
+>Modèle<|>Model<
+Créer la commande|Create order
+Envoyer l'état au client|Send status to client
+Envoyer l'état à |Send status to 
+Partager la fiche de |Share the profile of 
+Toute personne qui reçoit ce message peut lire ces mesures. Envoyez-le seulement à qui vous voulez.|Anyone who receives this message can read these measurements. Only send it to people you trust.
+Message à partager|Message to share
+>Copier<|>Copy<
+>Envoyer<|>Send<
+Ouvrir dans WhatsApp|Open in WhatsApp
+Message de fiche à importer|Profile message to import
+Entrez un nom pour ajouter un client.|Enter a name to add a client.
+ ajouté. Saisissez maintenant ses mesures.| added. Now enter their measurements.
+Renseignez toutes les mesures en centimètres : |Fill in all measurements in centimeters : 
+ manque ou est invalide.| is missing or invalid.
+Choisissez d'abord un client.|Select a client first.
+Enregistrez d'abord les mesures du client avant d'envoyer la commande.|First save the client's measurements before sending the order.
+Enregistrez d'abord vos mesures pour envoyer la commande.|First save your measurements to send the order.
+Enregistrez d'abord les mesures de |First save the measurements of 
+ avant de partager sa fiche.| before sharing their profile.
+Aucun code de fiche trouvé dans ce texte.|No profile code found in this text.
+Code illisible ou incomplet.|Unreadable or incomplete code.
+Fiche invalide : la mesure « |Invalid profile: the measurement « 
+ » manque ou est incorrecte.| » is missing or incorrect.
+Fiche de |Profile of 
+ importée.| imported.
+Message d'état invalide.|Invalid status message.
+Message copié.|Message copied.
+Copie impossible ici : touchez le texte, sélectionnez-le puis copiez-le.|Copy not possible here: tap the text, select it, then copy it.
+Commande créée. Envoyez le message ci-dessous à l'atelier.|Order created. Send the message below to the workshop.
+Commande créée.|Order created.
+Commande reçue de |Order received from 
+Commande mise à jour : |Order updated : 
+Commande introuvable sur cet appareil : utilisez le même profil que celui qui a passé la commande.|Order not found on this device: use the same profile that placed the order.
+Commande introuvable.|Order not found.
+Commande §B§ : |Order §B§ : 
+Ma fiche §B§. Ouvrez |My §B§ profile. Open 
+. Ouvrez |. Open 
+ puis, dans Clients, collez ce message dans « Importer un message ».|, then in Clients, paste this message into « Import a message ».
+Mise à jour de votre commande |Update on your order 
+, étape « |, stage « 
+ ». Ouvrez | ». Open 
+ puis collez ce message dans « Importer un message ».|, then paste this message into « Import a message ».
+ pour | for 
+Commande|Order
+Client supprimé|Deleted client
+Retour aux commandes|Back to orders
+Imprimer / enregistrer en PDF|Print / save as PDF
+Acompte versé (|Deposit paid (
+Acompte versé|Deposit paid
+Reste à payer|Balance due
+Soldé|Paid in full
+REÇU|RECEIPT
+DEVIS|QUOTE
+<h2>Devis</h2>|<h2>Quote</h2>
+<h2>Reçu</h2>|<h2>Receipt</h2>
+>Devis<|>Quote<
+>Reçu<|>Receipt<
+Devis / reçu|Quote / receipt
+Devis valable jusqu'au |Quote valid until 
+Tél. +|Tel. +
+N° |No. 
+Photo du tissu|Fabric photo
+Photo du modèle|Model photo
+Ajouter : |Add : 
+Changer : |Change : 
+>Retirer<|>Remove<
+Envoyer les photos|Send photos
+Photo illisible. Essayez une autre image.|Unreadable photo. Try another image.
+Mémoire de l'appareil pleine : retirez des photos anciennes.|Device storage full: remove older photos.
+Le partage de photos n'est pas disponible ici : appuyez longuement sur une photo pour l'enregistrer.|Photo sharing is not available here: long-press a photo to save it.
+Espèces|Cash
+Virement|Bank transfer
+Carte|Card
+Autre|Other
+Acompte|Deposit
+Paiements|Payments
+Montant (|Amount (
+>Mode<|>Method<
+Enregistrer le paiement|Record payment
+Total payé|Total paid
+Payé : |Paid : 
+>À payer<|>Unpaid<
+Paiement enregistré.|Payment recorded.
+Entrez un montant supérieur à 0.|Enter an amount greater than 0.
+Le montant dépasse le reste à payer.|The amount exceeds the balance due.
+Patron grandeur nature (A4)|Full-size pattern (A4)
+Patron grandeur nature|Full-size pattern
+Imprimez à 100 % sur du papier A4, sans « ajuster à la page ». Le carré de 10 cm de la première page sert à vérifier l'échelle. Collez les pages bord à bord.|Print at 100% on A4 paper, without "fit to page". The 10 cm square on the first page checks the scale. Tape the pages edge to edge.
+Imprimer (|Print (
+ pages A4)| A4 pages)
+Retour aux modèles|Back to models
+Imprimez à 100 %, sans ajuster à la page.|Print at 100%, do not fit to page.
+Assemblez les pages ligne par ligne, bord à bord.|Assemble the pages row by row, edge to edge.
+Les dimensions incluent des marges de couture approximatives.|Dimensions include approximate seam allowances.
+Vérifiez l'échelle : ce carré doit mesurer 10 cm|Check the scale: this square must measure 10 cm
+Page |Page 
+ · ligne | · row 
+ · colonne | · column 
+page(s)|page(s)
+Total : |Total: 
+ pages| pages
+Gilet|Vest
+Sweat|Sweatshirt
+Manteau|Coat
+Tailleur|Women's suit
+Jupe droite|Straight skirt
+Jupe|Skirt
+Short|Shorts
+Robe longue|Long dress
+Caftan|Kaftan
+Pantalon jean|Jeans
+Pantalon large|Wide-leg trousers
+Pantalon slim|Slim trousers
+Pantalon évasé|Flared trousers
+Tunique|Tunic
+Corset|Corset
+Débardeur|Tank top
+Trench|Trench coat
+Jogging|Joggers
+Legging|Leggings
+Sarouel|Harem pants
+Jupe évasée|Flared skirt
+Jupe crayon|Pencil skirt
+Jupe portefeuille|Wrap skirt
+Jupe plissée|Pleated skirt
+Jupe cloche|Circle skirt
+Jupe sirène|Mermaid skirt
+Jupe ballon|Bubble skirt
+Mini-jupe|Miniskirt
+Jupe longue|Long skirt
+Robe droite|Straight dress
+Robe trapèze|A-line dress
+Robe ovale|Oval dress
+Robe sirène|Mermaid dress
+Robe empire|Empire dress
+Robe cintrée|Fitted dress
+Robe portefeuille|Wrap dress
+Robe chemise|Shirt dress
+Robe bustier|Bustier dress
+Robe de soirée|Evening dress
+Robe de mariée|Wedding dress
+Combinaison|Jumpsuit
+Combishort|Playsuit
+Salopette|Overalls
+>Hauts<|>Tops<
+>Vestes et manteaux<|>Jackets and coats<
+>Bas<|>Bottoms<
+>Jupes<|>Skirts<
+>Robes<|>Dresses<
+>Tenues africaines<|>African outfits<
+>Combinaisons<|>Jumpsuits<
+label="Hauts"|label="Tops"
+label="Vestes et manteaux"|label="Jackets and coats"
+label="Bas"|label="Bottoms"
+label="Jupes"|label="Skirts"
+label="Robes"|label="Dresses"
+label="Tenues africaines"|label="African outfits"
+label="Combinaisons"|label="Jumpsuits"
+Haut Senator|Senator top
+Complet sénégalais (haut)|Senegalese suit (top)
+Chemise Madiba|Madiba shirt
+Chemise africaine|African shirt
+Veste col Mao|Mao-collar jacket
+>Tenues homme<|>Men's outfits<
+label="Tenues homme"|label="Men's outfits"
+Tableau de bord|Dashboard
+>7 jours<|>7 days<
+>30 jours<|>30 days<
+>12 mois<|>12 months<
+>Tout<|>All<
+Commandes passées|Orders placed
+Montant commandé|Amount ordered
+Encaissé|Collected
+Reste à encaisser|Outstanding
+Encaissements par mois|Payments collected per month
+Modèles les plus commandés|Most ordered models
+Modes de paiement|Payment methods
+Plus gros soldes à encaisser|Largest balances to collect
+Aucune donnée pour le moment. Les chiffres apparaissent dès la première commande.|No data yet. Figures appear with the first order.
+Disponible dans l'espace professionnel.|Available in the professional area.
+Aucun solde à encaisser.|No balances to collect.
+Aucun encaissement sur la période.|No payments in this period.
+Aucune commande sur la période.|No orders in this period.
+Date de livraison|Delivery date
+Rappels de livraison|Delivery reminders
+Rappel de livraison (jours avant)|Delivery reminder (days before)
+En retard de |Overdue by 
+Aujourd'hui|Today
+Dans |In 
+ jour(s)| day(s)
+Âge (enfants, en années)|Age (children, in years)
+ ans<| years<
+Mesures standard pour |Standard measurements for 
+ ans (estimation) : remplacez-les par les vraies mesures de l'enfant.| years (estimate): replace them with the child's real measurements.
+>Enfants<|>Kids<
+label="Enfants"|label="Kids"
+Salopette enfant|Kids' overalls
+Robe de baptême|Christening gown
+Robe fillette|Girl's dress
+Robe de cérémonie enfant|Child's formal dress
+Jupe fillette|Girl's skirt
+Short garçon|Boy's shorts
+Boubou enfant|Child's boubou
+Pantalon enfant|Kids' trousers
+Chemise garçon|Boy's shirt
+T-shirt enfant|Kids' T-shirt
+Uniforme scolaire (chemisette)|School uniform (short-sleeve shirt)
+Pyjama (haut)|Pyjama top
+Veste enfant|Kids' jacket
+Kaftan enfant|Child's kaftan
+Barboteuse|Romper
+Sauvegarde créée (|Backup created (
+ Ko).| KB).
+Sauvegarde copiée.|Backup copied.
+Sauvegarde illisible ou incomplète.|Unreadable or incomplete backup.
+Sauvegarde invalide.|Invalid backup.
+Aucune sauvegarde trouvée dans ce texte.|No backup found in this text.
+La sauvegarde contient les données de vos clients : gardez-la privée.|The backup contains your clients' data: keep it private.
+Inclure les photos (plus volumineux)|Include photos (larger)
+Créer la sauvegarde|Create backup
+Collez une sauvegarde : les clients et commandes manquants sont ajoutés, sans effacer l'existant.|Paste a backup: missing clients and orders are added, nothing existing is erased.
+Coller une sauvegarde|Paste a backup
+Restauration terminée : |Restore complete: 
+ client(s) et | client(s) and 
+ commande(s) ajouté(s).| order(s) added.
+Sauvegarde|Backup
+Restaurer|Restore
+Ourlet pantalon|Trouser hem
+Ourlet jupe / robe|Skirt / dress hem
+Raccourcir les manches|Shorten sleeves
+Ourlet jean (surjet original)|Jeans hem (original hem)
+Rétrécir (taille / côtés)|Take in (waist / sides)
+Élargir / agrandir|Let out / enlarge
+Changer une fermeture éclair|Replace a zipper
+Remplacer / recoudre des boutons|Replace / sew on buttons
+Réparer une déchirure / repriser|Repair a tear / darn
+Changer la doublure|Replace the lining
+Ajuster les épaules|Adjust the shoulders
+Changer un élastique|Replace elastic
+Réparer / refaire une poche|Repair / remake a pocket
+Transformation (modèle différent)|Alteration into a different style
+Reprendre les coutures|Re-sew seams
+Autre retouche|Other alteration
+>Retouches<|>Alterations<
+label="Retouches"|label="Alterations"
+Note / consignes|Note / instructions
+Ex. raccourcir de 3 cm|E.g. shorten by 3 cm
+Prix de cette commande (|Price for this order (
+Stock bas|Low stock
+>Tout<|>All<
+>Tissus<|>Fabrics<
+>Fournitures<|>Supplies<
+Tissus|Fabrics
+Fournitures|Supplies
+Fourniture|Supply
+Ajouter un article|Add an item
+Alerte (stock bas)|Alert (low stock)
+Unité|Unit
+Quantité|Quantity
+Prix par unité (|Price per unit (
+, facultatif)|, optional)
+Aucun article. Ajoutez votre premier tissu ou fourniture ci-dessus.|No items yet. Add your first fabric or supply above.
+Entrez un nom pour ajouter un article.|Enter a name to add an item.
+Entrez une quantité valide.|Enter a valid quantity.
+Article ajouté.|Item added.
+pièce|piece
+bobine|spool
+paquet|pack
+aria-label="Retirer 1"|aria-label="Remove 1"
+aria-label="Ajouter 1"|aria-label="Add 1"
+Déduire du stock|Deduct from stock
+Tissu utilisé|Fabric used
+Déduire |Deduct 
+ m du stock| m from stock
+Stock insuffisant (|Not enough stock (
+ m disponibles).| m available).
+Stock mis à jour.|Stock updated.
+ article(s) de stock ajouté(s).| stock item(s) added.
+>Nom<|>Name<
+Tissu|Fabric
+Hauteur totale|Total height
+>Neutre<|>Neutral<
+>Femme<|>Female<
+>Homme<|>Male<
+Silhouette du mannequin|Mannequin body shape
+Teint du mannequin|Mannequin skin tone
+Good Luck (haut long)|Good Luck tunic (long)
+Good Luck (haut court)|Good Luck tunic (short)
+Good Luck (ensemble long)|Good Luck set (long)
+Good Luck (ensemble court)|Good Luck set (short)
+Pantalon droit|Straight trousers
+Devant pantalon ×|Front trousers ×
+Dos pantalon ×|Back trousers ×
+Ceinture pantalon|Trousers waistband
+Couleur de broderie et finitions|Embroidery and trim color
+Essayer sur une photo|Try on a photo
+Essayage sur photo|Photo try-on
+Choisissez une photo du client en entier, debout, de face, sur fond uni. La photo reste sur votre appareil et n'est pas enregistrée.|Choose a full-length photo of the client, standing, facing the camera, on a plain background. The photo stays on your device and is not saved.
+Choisir une photo|Choose a photo
+Touchez le sommet de la tête.|Tap the top of the head.
+Touchez les pieds, au sol.|Tap the feet, on the floor.
+Aperçu prêt. Réglez les curseurs ou recommencez.|Preview ready. Adjust the sliders or start over.
+Opacité|Opacity
+Hauteur de l'habit|Garment height
+Largeur|Width
+Mode réaliste|Realistic mode
+Mode opaque|Opaque mode
+Recommencer|Start over
+Créer l'image à enregistrer|Create image to save
+Partager l'aperçu|Share the preview
+Touchez d'abord le sommet de la tête, puis les pieds.|First tap the top of the head, then the feet.
+Partage impossible ici : appuyez longuement sur l'image pour l'enregistrer.|Sharing is not possible here: long-press the image to save it.
+Retour aux modèles|Back to models
+Mode d'emploi|User guide
+>Pour tous<|>For everyone<
+>Pour le pro<|>For the professional<
+>À savoir<|>Good to know<
+Créer un profil|Create a profile
+Dans Profil (ou Clients pour le pro), ajoutez le nom, le téléphone et, pour un enfant, son âge.|In Profile (or Clients for the pro), add the name, phone and, for a child, their age.
+Saisir les mesures|Enter measurements
+Dans Mesures, remplissez les 8 mesures en centimètres et choisissez la silhouette du mannequin. Sans mesures, des mesures standard sont utilisées.|In Measurements, fill in the 8 measurements in centimeters and choose the mannequin body shape. Without measurements, standard ones are used.
+Choisir un modèle|Choose a model
+Dans Modèles, choisissez une catégorie puis un modèle. Le mannequin 3D porte l'habit à la taille du client : faites-le tourner et changez la couleur du tissu, de la broderie et le teint.|In Models, pick a category then a model. The 3D mannequin wears the garment at the client's size: rotate it and change the fabric, embroidery and skin colors.
+Essayer sur une photo|Try on a photo
+Le bouton Essayer sur une photo pose l'habit sur la photo du client. La photo reste sur votre appareil.|The Try on a photo button places the garment on the client's photo. The photo stays on your device.
+Commander|Place an order
+Le client touche Envoyer à l'atelier : un message avec sa commande et ses mesures est prêt à envoyer par WhatsApp ou autre.|The client taps Send to the workshop: a message with the order and measurements is ready to send by WhatsApp or another app.
+Suivre sa commande|Follow an order
+Dans Commandes, chaque commande a une étape, une date de livraison, une note et des photos. Le pro envoie l'état au client par un message à coller dans Importer un message.|In Orders, each order has a stage, a delivery date, a note and photos. The pro sends the status to the client in a message to paste into Import a message.
+Recevoir une commande|Receive an order
+Collez le message du client dans Clients, Importer un message : le client et la commande sont créés.|Paste the client's message into Clients, Import a message: the client and the order are created.
+Faire avancer une commande|Move an order forward
+Dans Commandes, touchez Passer à l'étape suivante. Modifiez le prix, ajoutez des photos et une date de livraison. Les rappels s'affichent sur l'Accueil.|In Orders, tap Move to the next stage. Edit the price, add photos and a delivery date. Reminders appear on Home.
+Devis et reçus|Quotes and receipts
+Touchez Devis / reçu sur une commande, enregistrez les paiements (acompte, mode de paiement), puis imprimez ou enregistrez en PDF.|Tap Quote / receipt on an order, record the payments (deposit, payment method), then print or save as PDF.
+Patron et tissu|Pattern and fabric
+Dans Modèles, l'espace pro affiche les calculs, les pièces à couper, le tissu estimé et le patron grandeur nature en pages A4 à assembler. Déduisez le tissu du stock.|In Models, the professional area shows the calculations, pieces to cut, estimated fabric and the full-size pattern as A4 pages to assemble. Deduct the fabric from stock.
+Stock et tableau de bord|Stock and dashboard
+Stock : tissus et fournitures avec alerte de stock bas. Tableau de bord : montants commandés, encaissements, modèles les plus commandés et soldes à encaisser.|Stock: fabrics and supplies with a low-stock alert. Dashboard: amounts ordered, payments collected, most ordered models and balances to collect.
+Sauvegarde|Backup
+Dans Paramètres, créez une sauvegarde de vos clients et commandes et gardez-la en lieu sûr. Restaurez-la au besoin.|In Settings, create a backup of your clients and orders and keep it somewhere safe. Restore it when needed.
+Données privées|Private data
+Vos données sont privées et se synchronisent entre vos appareils. Elles ne sont partagées que par les messages que vous envoyez.|Your data is private and syncs across your devices. It is only shared through the messages you send.
+Mannequin 3D indisponible sur cet appareil : dessin de face affiché. Utilisez Essayer sur une photo pour une vue plus réaliste.|3D mannequin unavailable on this device: front drawing shown. Use Try on a photo for a more realistic view.
+Langue|Language
+Dans Paramètres, choisissez Français, English, Español, Português ou العربية.|In Settings, choose Français, English, Español, Português or العربية.
+Limites|Limits
+Le mannequin est une représentation : vérifiez les formules et les proportions sur un premier essai en tissu.|The mannequin is an approximation: check the formulas and proportions on a first fabric trial.
+Langue|Language
+Nom de l'atelier|Workshop name
+Téléphone de l'atelier (avec l'indicatif du pays)|Workshop phone (with country code)
+Devise|Currency
+Validité du devis (jours, facultatif)|Quote validity (days, optional)
+Conditions de paiement (facultatif)|Payment terms (optional)
+Ces réglages restent dans votre espace privé. Le téléphone sert à envoyer les messages directement par WhatsApp.|These settings stay in your private space. The phone number is used to send messages directly via WhatsApp.
+Ex. Atelier Diop|E.g. Atelier Diop
+Les prix sont enregistrés dès que vous quittez le champ.|Prices are saved as soon as you leave the field.`;
+const ES=`Aucun atelier enregistré. Ajoutez celui de votre couturier dans Paramètres.|Aún no hay ningún taller guardado. Añade el de tu sastre en Ajustes.
+Ajouter un atelier|Añadir un taller
+>Atelier<|>Taller<
+Mes ateliers|Mis talleres
+Aucun atelier enregistré.|Aún no hay ningún taller guardado.
+Code de l'atelier|Código del taller
+Ajouter cet atelier|Añadir este taller
+Inviter des clients|Invitar a clientes
+Créez un code avec le nom, le téléphone et les prix de votre atelier. Vos clients l'ajoutent pour vous envoyer leurs commandes.|Crea un código con el nombre, el teléfono y los precios de tu taller. Tus clientes lo añaden para enviarte sus pedidos.
+Créer le code atelier|Crear el código del taller
+Renseignez d'abord le nom et le téléphone de l'atelier ci-dessus.|Primero rellena arriba el nombre y el teléfono del taller.
+Code de l'atelier invalide ou incomplet.|Código del taller no válido o incompleto.
+Atelier « |Taller « 
+ » ajouté. Créez votre profil pour commander.| » añadido. Crea tu perfil para hacer pedidos.
+ » ajouté.| » añadido.
+Bonjour ! Voici l'application de |¡Hola! Esta es la aplicación de 
+. Ouvrez ce lien : l'atelier s'ajoute tout seul. |. Abre este enlace: el taller se añade solo. 
+. Ouvrez l'application, puis Paramètres, Code de l'atelier, et collez ce message. |. Abre la aplicación, luego Ajustes, Código del taller, y pega este mensaje. 
+Décalage horizontal|Desplazamiento horizontal
+Ajusté sur les épaules. Pour régler les hanches, touchez la hanche gauche puis la hanche droite (facultatif).|Ajustado a los hombros. Para ajustar las caderas, toca la cadera izquierda y luego la derecha (opcional).
+Touchez maintenant l'autre hanche.|Ahora toca la otra cadera.
+Ajusté sur les épaules et les hanches. Réglez les curseurs si besoin.|Ajustado a hombros y caderas. Mueve los controles si hace falta.
+Aperçu prêt. Pour un meilleur ajustement : touchez l'épaule gauche puis l'épaule droite du client (facultatif).|Vista previa lista. Para un mejor ajuste: toca el hombro izquierdo y luego el derecho del cliente (opcional).
+Touchez maintenant l'autre épaule.|Ahora toca el otro hombro.
+Ajusté sur les épaules. Réglez les curseurs si besoin.|Ajustado a los hombros. Mueve los controles si hace falta.
+Annuler le dernier point|Deshacer el último punto
+Deuxième habit (facultatif)|Segunda prenda (opcional)
+>Aucun<|>Ninguna<
+Motif du tissu|Motivo de la tela
+>Uni<|>Liso<
+>Rayures<|>Rayas<
+>Pois<|>Lunares<
+>Carreaux<|>Cuadros<
+>Wax<|>Wax<
+Espace client|Espacio del cliente
+Espace professionnel|Espacio profesional
+Paramètres|Ajustes
+Accueil|Inicio
+>Profil<|>Perfil<
+Mesures enregistrées. Voici l'habit sur le mannequin de |Medidas guardadas. Esta es la prenda en el maniquí de 
+Mesures|Medidas
+Modèles d'habit|Modelos de prenda
+Modèles|Modelos
+Commandes en cours|Pedidos en curso
+Commandes|Pedidos
+Prix|Precios
+Données sur cet appareil seulement (accès en lecture seule).|Datos solo en este dispositivo (acceso de solo lectura).
+Données sur cet appareil seulement.|Datos solo en este dispositivo.
+Vos données sont privées et synchronisées entre vos appareils.|Tus datos son privados y se sincronizan entre tus dispositivos.
+Nouveau client|Nuevo cliente
+Mon profil|Mi perfil
+Clients existants|Clientes existentes
+Changer de profil|Cambiar de perfil
+Nouvelle commande|Nuevo pedido
+Aucune commande en cours. Créez-en une depuis Commandes.|No hay pedidos en curso. Crea uno desde Pedidos.
+Dernières commandes|Últimos pedidos
+Aucune commande pour le moment.|Aún no hay pedidos.
+Client actif : |Cliente activo: 
+Aucun client actif. Mesures standard utilisées.|No hay cliente activo. Se usan medidas estándar.
+Nom complet|Nombre completo
+Téléphone|Teléfono
+>Ajouter<|>Añadir<
+Importer un message|Importar un mensaje
+Collez un message reçu : fiche, commande ou état de commande.|Pega un mensaje recibido: ficha, pedido o estado del pedido.
+>Importer<|>Importar<
+Aucun client. Ajoutez le premier ci-dessus.|Aún no hay clientes. Añade el primero arriba.
+Sans téléphone|Sin teléfono
+>Actif<|>Activo<
+>Choisir<|>Elegir<
+>Partager<|>Compartir<
+>Suppr.<|>Eliminar<
+aria-label="Supprimer"|aria-label="Eliminar"
+Choisissez ou créez un client pour enregistrer ses mesures.|Elige o crea un cliente para guardar sus medidas.
+Ajouter un client|Añadir un cliente
+Créer mon profil|Crear mi perfil
+Enregistrer les mesures|Guardar las medidas
+Taille estimée ≈|Altura estimada ≈
+Poitrine|Pecho
+poitrine|pecho
+Taille|Cintura
+Bassin|Cadera
+bassin|cadera
+Épaules|Hombros
+Cuisse|Muslo
+Manches|Mangas
+Manche|Manga
+Entrejambe|Entrepierna
+Longueur|Largo
+Emmanchure|Sisa
+Encolure|Escote
+Hanches|Caderas
+Largeur du panneau|Ancho del panel
+Panneau ×|Panel ×
+Devant ×|Delantero ×
+Dos ×|Espalda ×
+Col ×|Cuello ×
+Ceinture|Cinturilla
+Devant · pli au centre|Delantero · doblez al centro
+droit-fil|hilo recto
+Sur le mannequin|En el maniquí
+Glissez sur le mannequin pour le tourner en 3D.|Arrastra sobre el maniquí para girarlo en 3D.
+>Face<|>Frente<
+>Dos<|>Espalda<
+Mannequin aux mesures standard : enregistrez des mesures pour l'adapter|Maniquí con medidas estándar: guarda medidas para adaptarlo
+Mannequin aux mesures de |Maniquí con las medidas de 
+Envoyer à l'atelier : |Enviar al taller: 
+Envoyer à l'atelier|Enviar al taller
+Couleur du tissu|Color de la tela
+Calculs|Cálculos
+<h2>Tissu</h2>|<h2>Tela</h2>
+Tissu estimé|Tela estimada
+Largeur du tissu (cm)|Ancho de la tela (cm)
+Rétrécissement (%)|Encogimiento (%)
+Pièces à couper|Piezas por cortar
+Une pièce dépasse la largeur du tissu : coupez-la en deux parties.|Una pieza es más ancha que la tela: córtala en dos partes.
+Imprimer le patron|Imprimir el patrón
+Pantalon|Pantalón
+Chemise|Camisa
+Veste / costume|Chaqueta / traje
+Robe|Vestido
+Étape : |Etapa: 
+Passer à : |Pasar a: 
+Coupe|Corte
+Couture|Costura
+Finition|Acabado
+Livrée|Entregado
+>Livrées<|>Entregados<
+>Toutes<|>Todos<
+>En cours<|>En curso<
+>Modèle<|>Modelo<
+Créer la commande|Crear el pedido
+Envoyer l'état au client|Enviar el estado al cliente
+Envoyer l'état à |Enviar el estado a 
+Partager la fiche de |Compartir el perfil de 
+Toute personne qui reçoit ce message peut lire ces mesures. Envoyez-le seulement à qui vous voulez.|Cualquier persona que reciba este mensaje puede leer estas medidas. Envíalo solo a quien quieras.
+Message à partager|Mensaje para compartir
+>Copier<|>Copiar<
+>Envoyer<|>Enviar<
+Ouvrir dans WhatsApp|Abrir en WhatsApp
+Message de fiche à importer|Mensaje de ficha para importar
+Entrez un nom pour ajouter un client.|Escribe un nombre para añadir un cliente.
+ ajouté. Saisissez maintenant ses mesures.| añadido. Ahora introduce sus medidas.
+Renseignez toutes les mesures en centimètres : |Rellena todas las medidas en centímetros: 
+ manque ou est invalide.| falta o no es válida.
+Choisissez d'abord un client.|Elige primero un cliente.
+Enregistrez d'abord les mesures du client avant d'envoyer la commande.|Primero guarda las medidas del cliente antes de enviar el pedido.
+Enregistrez d'abord vos mesures pour envoyer la commande.|Primero guarda tus medidas para enviar el pedido.
+Enregistrez d'abord les mesures de |Primero guarda las medidas de 
+ avant de partager sa fiche.| antes de compartir su ficha.
+Aucun code de fiche trouvé dans ce texte.|No se encontró ningún código de ficha en este texto.
+Code illisible ou incomplet.|Código ilegible o incompleto.
+Fiche invalide : la mesure « |Ficha no válida: la medida « 
+ » manque ou est incorrecte.| » falta o es incorrecta.
+Fiche de |Ficha de 
+ importée.| importada.
+Message d'état invalide.|Mensaje de estado no válido.
+Message copié.|Mensaje copiado.
+Copie impossible ici : touchez le texte, sélectionnez-le puis copiez-le.|No se puede copiar aquí: toca el texto, selecciónalo y cópialo.
+Commande créée. Envoyez le message ci-dessous à l'atelier.|Pedido creado. Envía el mensaje de abajo al taller.
+Commande créée.|Pedido creado.
+Commande reçue de |Pedido recibido de 
+Commande mise à jour : |Pedido actualizado: 
+Commande introuvable sur cet appareil : utilisez le même profil que celui qui a passé la commande.|Pedido no encontrado en este dispositivo: usa el mismo perfil que hizo el pedido.
+Commande introuvable.|Pedido no encontrado.
+Commande §B§ : |Pedido §B§: 
+Ma fiche §B§. Ouvrez |Mi ficha de §B§. Abre 
+. Ouvrez |. Abre 
+ puis, dans Clients, collez ce message dans « Importer un message ».|, luego en Clientes, pega este mensaje en « Importar un mensaje ».
+Mise à jour de votre commande |Actualización de tu pedido 
+, étape « |, etapa « 
+ ». Ouvrez | ». Abre 
+ puis collez ce message dans « Importer un message ».|, luego pega este mensaje en « Importar un mensaje ».
+ pour | para 
+Commande|Pedido
+Client supprimé|Cliente eliminado
+Retour aux commandes|Volver a los pedidos
+Imprimer / enregistrer en PDF|Imprimir / guardar como PDF
+Acompte versé (|Anticipo pagado (
+Acompte versé|Anticipo pagado
+Reste à payer|Saldo pendiente
+Soldé|Pagado por completo
+REÇU|RECIBO
+DEVIS|PRESUPUESTO
+<h2>Devis</h2>|<h2>Presupuesto</h2>
+<h2>Reçu</h2>|<h2>Recibo</h2>
+>Devis<|>Presupuesto<
+>Reçu<|>Recibo<
+Devis / reçu|Presupuesto / recibo
+Devis valable jusqu'au |Presupuesto válido hasta el 
+Tél. +|Tel. +
+N° |N.º 
+Photo du tissu|Foto de la tela
+Photo du modèle|Foto del modelo
+Ajouter : |Añadir: 
+Changer : |Cambiar: 
+>Retirer<|>Quitar<
+Envoyer les photos|Enviar las fotos
+Photo illisible. Essayez une autre image.|Foto ilegible. Prueba con otra imagen.
+Mémoire de l'appareil pleine : retirez des photos anciennes.|Memoria del dispositivo llena: quita fotos antiguas.
+Le partage de photos n'est pas disponible ici : appuyez longuement sur une photo pour l'enregistrer.|Compartir fotos no está disponible aquí: mantén pulsada una foto para guardarla.
+Espèces|Efectivo
+Virement|Transferencia
+Carte|Tarjeta
+Autre|Otro
+Acompte|Anticipo
+Paiements|Pagos
+Montant (|Importe (
+>Mode<|>Método<
+Enregistrer le paiement|Registrar el pago
+Total payé|Total pagado
+Payé : |Pagado: 
+>À payer<|>Por pagar<
+Paiement enregistré.|Pago registrado.
+Entrez un montant supérieur à 0.|Introduce un importe mayor que 0.
+Le montant dépasse le reste à payer.|El importe supera el saldo pendiente.
+Patron grandeur nature (A4)|Patrón a tamaño real (A4)
+Patron grandeur nature|Patrón a tamaño real
+Imprimez à 100 % sur du papier A4, sans « ajuster à la page ». Le carré de 10 cm de la première page sert à vérifier l'échelle. Collez les pages bord à bord.|Imprime al 100 % en papel A4, sin «ajustar a la página». El cuadrado de 10 cm de la primera página sirve para comprobar la escala. Pega las páginas borde con borde.
+Imprimer (|Imprimir (
+ pages A4)| páginas A4)
+Retour aux modèles|Volver a los modelos
+Imprimez à 100 %, sans ajuster à la page.|Imprime al 100 %, sin ajustar a la página.
+Assemblez les pages ligne par ligne, bord à bord.|Une las páginas fila por fila, borde con borde.
+Les dimensions incluent des marges de couture approximatives.|Las medidas incluyen márgenes de costura aproximados.
+Vérifiez l'échelle : ce carré doit mesurer 10 cm|Comprueba la escala: este cuadrado debe medir 10 cm
+Page |Página 
+ · ligne | · fila 
+ · colonne | · columna 
+page(s)|página(s)
+Total : |Total: 
+ pages| páginas
+T-shirt|Camiseta
+Blouse|Blusa
+Gilet|Chaleco
+Sweat|Sudadera
+Manteau|Abrigo
+Tailleur|Traje sastre
+Jupe droite|Falda recta
+Jupe|Falda
+Short|Pantalón corto
+Bermuda|Bermudas
+Robe longue|Vestido largo
+Caftan|Caftán
+Djellaba|Chilaba
+Grand boubou|Gran bubú
+Pantalon jean|Vaqueros
+Pantalon large|Pantalón ancho
+Pantalon slim|Pantalón slim
+Pantalon évasé|Pantalón acampanado
+Tunique|Túnica
+Corset|Corsé
+Débardeur|Camiseta sin mangas
+Trench|Gabardina
+Jogging|Pantalón de chándal
+Sarouel|Pantalón harén
+Jupe évasée|Falda acampanada
+Jupe crayon|Falda lápiz
+Jupe portefeuille|Falda cruzada
+Jupe plissée|Falda plisada
+Jupe cloche|Falda de vuelo
+Jupe sirène|Falda sirena
+Jupe ballon|Falda globo
+Mini-jupe|Minifalda
+Jupe longue|Falda larga
+Robe droite|Vestido recto
+Robe trapèze|Vestido en A
+Robe ovale|Vestido ovalado
+Robe sirène|Vestido sirena
+Robe empire|Vestido imperio
+Robe cintrée|Vestido entallado
+Robe portefeuille|Vestido cruzado
+Robe chemise|Vestido camisero
+Robe bustier|Vestido palabra de honor
+Robe de soirée|Vestido de noche
+Robe de mariée|Vestido de novia
+Gandoura|Gandura
+Combinaison|Mono
+Combishort|Mono corto
+Salopette|Peto
+>Hauts<|>Partes de arriba<
+>Vestes et manteaux<|>Chaquetas y abrigos<
+>Bas<|>Partes de abajo<
+>Jupes<|>Faldas<
+>Robes<|>Vestidos<
+>Tenues africaines<|>Trajes africanos<
+>Combinaisons<|>Monos<
+label="Hauts"|label="Partes de arriba"
+label="Vestes et manteaux"|label="Chaquetas y abrigos"
+label="Bas"|label="Partes de abajo"
+label="Jupes"|label="Faldas"
+label="Robes"|label="Vestidos"
+label="Tenues africaines"|label="Trajes africanos"
+label="Combinaisons"|label="Monos"
+Haut Senator|Parte superior Senator
+Complet sénégalais (haut)|Conjunto senegalés (parte superior)
+Chemise Madiba|Camisa Madiba
+Chemise africaine|Camisa africana
+Veste col Mao|Chaqueta cuello Mao
+>Tenues homme<|>Trajes de hombre<
+label="Tenues homme"|label="Trajes de hombre"
+Tableau de bord|Panel de control
+>7 jours<|>7 días<
+>30 jours<|>30 días<
+>12 mois<|>12 meses<
+>Tout<|>Todo<
+Commandes passées|Pedidos realizados
+Montant commandé|Importe pedido
+Encaissé|Cobrado
+Reste à encaisser|Pendiente de cobro
+Encaissements par mois|Cobros por mes
+Modèles les plus commandés|Modelos más pedidos
+Modes de paiement|Métodos de pago
+Plus gros soldes à encaisser|Mayores saldos por cobrar
+Aucune donnée pour le moment. Les chiffres apparaissent dès la première commande.|Aún no hay datos. Las cifras aparecen con el primer pedido.
+Disponible dans l'espace professionnel.|Disponible en el espacio profesional.
+Aucun solde à encaisser.|No hay saldos por cobrar.
+Aucun encaissement sur la période.|No hay cobros en este periodo.
+Aucune commande sur la période.|No hay pedidos en este periodo.
+Date de livraison|Fecha de entrega
+Rappels de livraison|Recordatorios de entrega
+Rappel de livraison (jours avant)|Recordatorio de entrega (días antes)
+En retard de |Con retraso de 
+Aujourd'hui|Hoy
+Dans |En 
+ jour(s)| día(s)
+Âge (enfants, en années)|Edad (niños, en años)
+ ans<| años<
+Mesures standard pour |Medidas estándar para 
+ ans (estimation) : remplacez-les par les vraies mesures de l'enfant.| años (estimación): sustitúyelas por las medidas reales del niño.
+>Enfants<|>Niños<
+label="Enfants"|label="Niños"
+Salopette enfant|Peto infantil
+Robe de baptême|Vestido de bautizo
+Robe fillette|Vestido de niña
+Robe de cérémonie enfant|Vestido de ceremonia infantil
+Jupe fillette|Falda de niña
+Short garçon|Pantalón corto de niño
+Boubou enfant|Bubú infantil
+Pantalon enfant|Pantalón infantil
+Chemise garçon|Camisa de niño
+T-shirt enfant|Camiseta infantil
+Uniforme scolaire (chemisette)|Uniforme escolar (camisa de manga corta)
+Pyjama (haut)|Parte superior de pijama
+Veste enfant|Chaqueta infantil
+Kaftan enfant|Caftán infantil
+Barboteuse|Pelele
+Sauvegarde créée (|Copia creada (
+ Ko).| KB).
+Sauvegarde copiée.|Copia copiada.
+Sauvegarde illisible ou incomplète.|Copia ilegible o incompleta.
+Sauvegarde invalide.|Copia no válida.
+Aucune sauvegarde trouvée dans ce texte.|No se encontró ninguna copia en este texto.
+La sauvegarde contient les données de vos clients : gardez-la privée.|La copia contiene los datos de tus clientes: mantenla privada.
+Inclure les photos (plus volumineux)|Incluir fotos (más grande)
+Créer la sauvegarde|Crear copia de seguridad
+Collez une sauvegarde : les clients et commandes manquants sont ajoutés, sans effacer l'existant.|Pega una copia: se añaden los clientes y pedidos que faltan, sin borrar lo existente.
+Coller une sauvegarde|Pegar una copia
+Restauration terminée : |Restauración completa: 
+ client(s) et | cliente(s) y 
+ commande(s) ajouté(s).| pedido(s) añadido(s).
+Sauvegarde|Copia de seguridad
+Restaurer|Restaurar
+Ourlet pantalon|Dobladillo de pantalón
+Ourlet jupe / robe|Dobladillo de falda / vestido
+Raccourcir les manches|Acortar las mangas
+Ourlet jean (surjet original)|Dobladillo de vaqueros (original)
+Rétrécir (taille / côtés)|Estrechar (cintura / costados)
+Élargir / agrandir|Ensanchar / agrandar
+Changer une fermeture éclair|Cambiar una cremallera
+Remplacer / recoudre des boutons|Cambiar / coser botones
+Réparer une déchirure / repriser|Reparar un desgarro / zurcir
+Changer la doublure|Cambiar el forro
+Ajuster les épaules|Ajustar los hombros
+Changer un élastique|Cambiar un elástico
+Réparer / refaire une poche|Reparar / rehacer un bolsillo
+Transformation (modèle différent)|Transformación (otro modelo)
+Reprendre les coutures|Rehacer costuras
+Autre retouche|Otro arreglo
+>Retouches<|>Arreglos<
+label="Retouches"|label="Arreglos"
+Note / consignes|Nota / instrucciones
+Ex. raccourcir de 3 cm|Ej. acortar 3 cm
+Prix de cette commande (|Precio de este pedido (
+Stock bas|Stock bajo
+>Tout<|>Todo<
+>Tissus<|>Telas<
+>Fournitures<|>Suministros<
+Tissus|Telas
+Fournitures|Suministros
+Fourniture|Suministro
+Ajouter un article|Añadir un artículo
+Alerte (stock bas)|Alerta (stock bajo)
+Unité|Unidad
+Quantité|Cantidad
+Prix par unité (|Precio por unidad (
+, facultatif)|, opcional)
+Aucun article. Ajoutez votre premier tissu ou fourniture ci-dessus.|Aún no hay artículos. Añade arriba tu primera tela o suministro.
+Entrez un nom pour ajouter un article.|Escribe un nombre para añadir un artículo.
+Entrez une quantité valide.|Introduce una cantidad válida.
+Article ajouté.|Artículo añadido.
+pièce|pieza
+bobine|bobina
+paquet|paquete
+aria-label="Retirer 1"|aria-label="Quitar 1"
+aria-label="Ajouter 1"|aria-label="Añadir 1"
+Déduire du stock|Descontar del stock
+Tissu utilisé|Tela usada
+Déduire |Descontar 
+ m du stock| m del stock
+Stock insuffisant (|Stock insuficiente (
+ m disponibles).| m disponibles).
+Stock mis à jour.|Stock actualizado.
+ article(s) de stock ajouté(s).| artículo(s) de stock añadido(s).
+>Nom<|>Nombre<
+Tissu|Tela
+>Clients<|>Clientes<
+>Client<|>Cliente<
+Hauteur totale|Altura total
+>Neutre<|>Neutra<
+>Femme<|>Mujer<
+>Homme<|>Hombre<
+Silhouette du mannequin|Silueta del maniquí
+Teint du mannequin|Tono de piel del maniquí
+Good Luck (haut long)|Túnica Good Luck (larga)
+Good Luck (haut court)|Túnica Good Luck (corta)
+Good Luck (ensemble long)|Conjunto Good Luck (largo)
+Good Luck (ensemble court)|Conjunto Good Luck (corto)
+Pantalon droit|Pantalón recto
+Devant pantalon ×|Delantero pantalón ×
+Dos pantalon ×|Espalda pantalón ×
+Ceinture pantalon|Cinturilla pantalón
+Couleur de broderie et finitions|Color del bordado y acabados
+Essayer sur une photo|Probar sobre una foto
+Essayage sur photo|Prueba sobre foto
+Choisissez une photo du client en entier, debout, de face, sur fond uni. La photo reste sur votre appareil et n'est pas enregistrée.|Elige una foto del cliente de cuerpo entero, de pie, de frente y sobre fondo liso. La foto se queda en tu dispositivo y no se guarda.
+Choisir une photo|Elegir una foto
+Touchez le sommet de la tête.|Toca la parte superior de la cabeza.
+Touchez les pieds, au sol.|Toca los pies, en el suelo.
+Aperçu prêt. Réglez les curseurs ou recommencez.|Vista previa lista. Ajusta los controles o empieza de nuevo.
+Opacité|Opacidad
+Hauteur de l'habit|Altura de la prenda
+Largeur|Ancho
+Mode réaliste|Modo realista
+Mode opaque|Modo opaco
+Recommencer|Empezar de nuevo
+Créer l'image à enregistrer|Crear imagen para guardar
+Partager l'aperçu|Compartir la vista previa
+Touchez d'abord le sommet de la tête, puis les pieds.|Primero toca la parte superior de la cabeza y luego los pies.
+Partage impossible ici : appuyez longuement sur l'image pour l'enregistrer.|No se puede compartir aquí: mantén pulsada la imagen para guardarla.
+Retour aux modèles|Volver a los modelos
+Mode d'emploi|Guía de uso
+>Pour tous<|>Para todos<
+>Pour le pro<|>Para el profesional<
+>À savoir<|>Conviene saber<
+Créer un profil|Crear un perfil
+Dans Profil (ou Clients pour le pro), ajoutez le nom, le téléphone et, pour un enfant, son âge.|En Perfil (o Clientes para el profesional), añade el nombre, el teléfono y, para un niño, su edad.
+Saisir les mesures|Introducir las medidas
+Dans Mesures, remplissez les 8 mesures en centimètres et choisissez la silhouette du mannequin. Sans mesures, des mesures standard sont utilisées.|En Medidas, rellena las 8 medidas en centímetros y elige la silueta del maniquí. Sin medidas se usan medidas estándar.
+Choisir un modèle|Elegir un modelo
+Dans Modèles, choisissez une catégorie puis un modèle. Le mannequin 3D porte l'habit à la taille du client : faites-le tourner et changez la couleur du tissu, de la broderie et le teint.|En Modelos, elige una categoría y luego un modelo. El maniquí 3D lleva la prenda a la medida del cliente: gíralo y cambia el color de la tela, del bordado y el tono de piel.
+Essayer sur une photo|Probar sobre una foto
+Le bouton Essayer sur une photo pose l'habit sur la photo du client. La photo reste sur votre appareil.|El botón Probar sobre una foto coloca la prenda sobre la foto del cliente. La foto se queda en tu dispositivo.
+Commander|Hacer un pedido
+Le client touche Envoyer à l'atelier : un message avec sa commande et ses mesures est prêt à envoyer par WhatsApp ou autre.|El cliente toca Enviar al taller: un mensaje con el pedido y las medidas queda listo para enviarlo por WhatsApp u otra aplicación.
+Suivre sa commande|Seguir un pedido
+Dans Commandes, chaque commande a une étape, une date de livraison, une note et des photos. Le pro envoie l'état au client par un message à coller dans Importer un message.|En Pedidos, cada pedido tiene una etapa, una fecha de entrega, una nota y fotos. El profesional envía el estado al cliente en un mensaje que se pega en Importar un mensaje.
+Recevoir une commande|Recibir un pedido
+Collez le message du client dans Clients, Importer un message : le client et la commande sont créés.|Pega el mensaje del cliente en Clientes, Importar un mensaje: se crean el cliente y el pedido.
+Faire avancer une commande|Avanzar un pedido
+Dans Commandes, touchez Passer à l'étape suivante. Modifiez le prix, ajoutez des photos et une date de livraison. Les rappels s'affichent sur l'Accueil.|En Pedidos, toca Pasar a la siguiente etapa. Modifica el precio, añade fotos y una fecha de entrega. Los recordatorios aparecen en Inicio.
+Devis et reçus|Presupuestos y recibos
+Touchez Devis / reçu sur une commande, enregistrez les paiements (acompte, mode de paiement), puis imprimez ou enregistrez en PDF.|Toca Presupuesto / recibo en un pedido, registra los pagos (anticipo, método de pago) y luego imprime o guarda en PDF.
+Patron et tissu|Patrón y tela
+Dans Modèles, l'espace pro affiche les calculs, les pièces à couper, le tissu estimé et le patron grandeur nature en pages A4 à assembler. Déduisez le tissu du stock.|En Modelos, el espacio profesional muestra los cálculos, las piezas por cortar, la tela estimada y el patrón a tamaño real en páginas A4 para unir. Descuenta la tela del stock.
+Stock et tableau de bord|Stock y panel de control
+Stock : tissus et fournitures avec alerte de stock bas. Tableau de bord : montants commandés, encaissements, modèles les plus commandés et soldes à encaisser.|Stock: telas y suministros con alerta de stock bajo. Panel de control: importes pedidos, cobros, modelos más pedidos y saldos por cobrar.
+Sauvegarde|Copia de seguridad
+Dans Paramètres, créez une sauvegarde de vos clients et commandes et gardez-la en lieu sûr. Restaurez-la au besoin.|En Ajustes, crea una copia de tus clientes y pedidos y guárdala en un lugar seguro. Restáurala cuando haga falta.
+Données privées|Datos privados
+Vos données sont privées et se synchronisent entre vos appareils. Elles ne sont partagées que par les messages que vous envoyez.|Tus datos son privados y se sincronizan entre tus dispositivos. Solo se comparten mediante los mensajes que envías.
+Mannequin 3D indisponible sur cet appareil : dessin de face affiché. Utilisez Essayer sur une photo pour une vue plus réaliste.|Maniquí 3D no disponible en este dispositivo: se muestra el dibujo de frente. Usa Probar sobre una foto para una vista más realista.
+Langue|Idioma
+Dans Paramètres, choisissez Français, English, Español, Português ou العربية.|En Ajustes, elige Français, English, Español, Português o العربية.
+Limites|Límites
+Le mannequin est une représentation : vérifiez les formules et les proportions sur un premier essai en tissu.|El maniquí es una representación: comprueba las fórmulas y las proporciones con una primera prueba en tela.
+Langue|Idioma
+Nom de l'atelier|Nombre del taller
+Téléphone de l'atelier (avec l'indicatif du pays)|Teléfono del taller (con prefijo del país)
+Devise|Moneda
+Validité du devis (jours, facultatif)|Validez del presupuesto (días, opcional)
+Conditions de paiement (facultatif)|Condiciones de pago (opcional)
+Ces réglages restent dans votre espace privé. Le téléphone sert à envoyer les messages directement par WhatsApp.|Estos ajustes se quedan en tu espacio privado. El teléfono sirve para enviar mensajes directamente por WhatsApp.
+Ex. Atelier Diop|Ej. Taller Diop
+Les prix sont enregistrés dès que vous quittez le champ.|Los precios se guardan en cuanto sales del campo.`;
+const PT=`Aucun atelier enregistré. Ajoutez celui de votre couturier dans Paramètres.|Nenhuma oficina guardada. Adicione a do seu costureiro em Configurações.
+Ajouter un atelier|Adicionar uma oficina
+>Atelier<|>Oficina<
+Mes ateliers|As minhas oficinas
+Aucun atelier enregistré.|Nenhuma oficina guardada.
+Code de l'atelier|Código da oficina
+Ajouter cet atelier|Adicionar esta oficina
+Inviter des clients|Convidar clientes
+Créez un code avec le nom, le téléphone et les prix de votre atelier. Vos clients l'ajoutent pour vous envoyer leurs commandes.|Crie um código com o nome, o telefone e os preços da sua oficina. Os seus clientes adicionam-no para lhe enviar as encomendas.
+Créer le code atelier|Criar o código da oficina
+Renseignez d'abord le nom et le téléphone de l'atelier ci-dessus.|Preencha primeiro acima o nome e o telefone da oficina.
+Code de l'atelier invalide ou incomplet.|Código da oficina inválido ou incompleto.
+Atelier « |Oficina « 
+ » ajouté. Créez votre profil pour commander.| » adicionada. Crie o seu perfil para encomendar.
+ » ajouté.| » adicionada.
+Bonjour ! Voici l'application de |Olá! Esta é a aplicação de 
+. Ouvrez ce lien : l'atelier s'ajoute tout seul. |. Abra esta ligação: a oficina é adicionada automaticamente. 
+. Ouvrez l'application, puis Paramètres, Code de l'atelier, et collez ce message. |. Abra a aplicação, depois Configurações, Código da oficina, e cole esta mensagem. 
+Décalage horizontal|Deslocamento horizontal
+Ajusté sur les épaules. Pour régler les hanches, touchez la hanche gauche puis la hanche droite (facultatif).|Ajustado aos ombros. Para ajustar as ancas, toque na anca esquerda e depois na direita (opcional).
+Touchez maintenant l'autre hanche.|Agora toque na outra anca.
+Ajusté sur les épaules et les hanches. Réglez les curseurs si besoin.|Ajustado aos ombros e às ancas. Mova os controlos se necessário.
+Aperçu prêt. Pour un meilleur ajustement : touchez l'épaule gauche puis l'épaule droite du client (facultatif).|Pré-visualização pronta. Para melhor ajuste: toque no ombro esquerdo e depois no direito do cliente (opcional).
+Touchez maintenant l'autre épaule.|Agora toque no outro ombro.
+Ajusté sur les épaules. Réglez les curseurs si besoin.|Ajustado aos ombros. Mexa nos controlos se necessário.
+Annuler le dernier point|Anular o último ponto
+Deuxième habit (facultatif)|Segunda peça (opcional)
+>Aucun<|>Nenhuma<
+Motif du tissu|Padrão do tecido
+>Uni<|>Liso<
+>Rayures<|>Riscas<
+>Pois<|>Bolinhas<
+>Carreaux<|>Xadrez<
+>Wax<|>Wax<
+T-shirt|Camiseta
+Blouse|Blusa
+Bermuda|Bermudas
+Djellaba|Djellaba
+Grand boubou|Grande boubou
+Gandoura|Gandura
+>Clients<|>Clientes<
+>Client<|>Cliente<
+Espace client|Espaço do cliente
+Espace professionnel|Espaço profissional
+Paramètres|Configurações
+Accueil|Início
+>Profil<|>Perfil<
+Mesures enregistrées. Voici l'habit sur le mannequin de |Medidas guardadas. Veja a peça no manequim de 
+Mesures|Medidas
+Modèles d'habit|Modelos de peças
+Modèles|Modelos
+Commandes en cours|Encomendas em curso
+Commandes|Encomendas
+Prix|Preços
+Données sur cet appareil seulement (accès en lecture seule).|Dados apenas neste dispositivo (acesso só de leitura).
+Données sur cet appareil seulement.|Dados apenas neste dispositivo.
+Vos données sont privées et synchronisées entre vos appareils.|Os seus dados são privados e sincronizados entre os seus dispositivos.
+Nouveau client|Novo cliente
+Mon profil|O meu perfil
+Clients existants|Clientes existentes
+Changer de profil|Mudar de perfil
+Nouvelle commande|Nova encomenda
+Aucune commande en cours. Créez-en une depuis Commandes.|Nenhuma encomenda em curso. Crie uma em Encomendas.
+Dernières commandes|Últimas encomendas
+Aucune commande pour le moment.|Ainda não há encomendas.
+Client actif : |Cliente ativo: 
+Aucun client actif. Mesures standard utilisées.|Nenhum cliente ativo. Usam-se medidas padrão.
+Nom complet|Nome completo
+Téléphone|Telefone
+>Ajouter<|>Adicionar<
+Importer un message|Importar uma mensagem
+Collez un message reçu : fiche, commande ou état de commande.|Cole uma mensagem recebida: ficha, encomenda ou estado da encomenda.
+>Importer<|>Importar<
+Aucun client. Ajoutez le premier ci-dessus.|Ainda não há clientes. Adicione o primeiro acima.
+Sans téléphone|Sem telefone
+>Actif<|>Ativo<
+>Choisir<|>Escolher<
+>Partager<|>Partilhar<
+>Suppr.<|>Eliminar<
+aria-label="Supprimer"|aria-label="Eliminar"
+Choisissez ou créez un client pour enregistrer ses mesures.|Escolha ou crie um cliente para guardar as suas medidas.
+Ajouter un client|Adicionar um cliente
+Créer mon profil|Criar o meu perfil
+Enregistrer les mesures|Guardar as medidas
+Taille estimée ≈|Altura estimada ≈
+Poitrine|Peito
+poitrine|peito
+Taille|Cintura
+Bassin|Anca
+bassin|anca
+Épaules|Ombros
+Cuisse|Coxa
+Manches|Mangas
+Manche|Manga
+Entrejambe|Entrepernas
+Longueur|Comprimento
+Emmanchure|Cava
+Encolure|Decote
+Hanches|Ancas
+Largeur du panneau|Largura do painel
+Panneau ×|Painel ×
+Devant ×|Frente ×
+Dos ×|Costas ×
+Col ×|Gola ×
+Ceinture|Cós
+Devant · pli au centre|Frente · dobra ao centro
+droit-fil|fio reto
+Sur le mannequin|No manequim
+Glissez sur le mannequin pour le tourner en 3D.|Arraste no manequim para o rodar em 3D.
+>Face<|>Frente<
+>Dos<|>Costas<
+Mannequin aux mesures standard : enregistrez des mesures pour l'adapter|Manequim com medidas padrão: guarde medidas para o adaptar
+Mannequin aux mesures de |Manequim com as medidas de 
+Envoyer à l'atelier : |Enviar ao atelier: 
+Envoyer à l'atelier|Enviar ao atelier
+Couleur du tissu|Cor do tecido
+Calculs|Cálculos
+<h2>Tissu</h2>|<h2>Tecido</h2>
+Tissu estimé|Tecido estimado
+Largeur du tissu (cm)|Largura do tecido (cm)
+Rétrécissement (%)|Encolhimento (%)
+Pièces à couper|Peças a cortar
+Une pièce dépasse la largeur du tissu : coupez-la en deux parties.|Uma peça é mais larga do que o tecido: corte-a em duas partes.
+Imprimer le patron|Imprimir o molde
+Pantalon|Calças
+Chemise|Camisa
+Veste / costume|Casaco / fato
+Robe|Vestido
+Étape : |Etapa: 
+Passer à : |Passar a: 
+Coupe|Corte
+Couture|Costura
+Finition|Acabamento
+Livrée|Entregue
+>Livrées<|>Entregues<
+>Toutes<|>Todas<
+>En cours<|>Em curso<
+>Modèle<|>Modelo<
+Créer la commande|Criar a encomenda
+Envoyer l'état au client|Enviar o estado ao cliente
+Envoyer l'état à |Enviar o estado a 
+Partager la fiche de |Partilhar a ficha de 
+Toute personne qui reçoit ce message peut lire ces mesures. Envoyez-le seulement à qui vous voulez.|Qualquer pessoa que receba esta mensagem pode ler estas medidas. Envie-a apenas a quem quiser.
+Message à partager|Mensagem para partilhar
+>Copier<|>Copiar<
+>Envoyer<|>Enviar<
+Ouvrir dans WhatsApp|Abrir no WhatsApp
+Message de fiche à importer|Mensagem de ficha a importar
+Entrez un nom pour ajouter un client.|Escreva um nome para adicionar um cliente.
+ ajouté. Saisissez maintenant ses mesures.| adicionado. Introduza agora as suas medidas.
+Renseignez toutes les mesures en centimètres : |Preencha todas as medidas em centímetros: 
+ manque ou est invalide.| em falta ou inválida.
+Choisissez d'abord un client.|Escolha primeiro um cliente.
+Enregistrez d'abord les mesures du client avant d'envoyer la commande.|Guarde primeiro as medidas do cliente antes de enviar a encomenda.
+Enregistrez d'abord vos mesures pour envoyer la commande.|Guarde primeiro as suas medidas para enviar a encomenda.
+Enregistrez d'abord les mesures de |Guarde primeiro as medidas de 
+ avant de partager sa fiche.| antes de partilhar a sua ficha.
+Aucun code de fiche trouvé dans ce texte.|Nenhum código de ficha encontrado neste texto.
+Code illisible ou incomplet.|Código ilegível ou incompleto.
+Fiche invalide : la mesure « |Ficha inválida: a medida « 
+ » manque ou est incorrecte.| » está em falta ou incorreta.
+Fiche de |Ficha de 
+ importée.| importada.
+Message d'état invalide.|Mensagem de estado inválida.
+Message copié.|Mensagem copiada.
+Copie impossible ici : touchez le texte, sélectionnez-le puis copiez-le.|Não é possível copiar aqui: toque no texto, selecione-o e copie-o.
+Commande créée. Envoyez le message ci-dessous à l'atelier.|Encomenda criada. Envie a mensagem abaixo ao atelier.
+Commande créée.|Encomenda criada.
+Commande reçue de |Encomenda recebida de 
+Commande mise à jour : |Encomenda atualizada: 
+Commande introuvable sur cet appareil : utilisez le même profil que celui qui a passé la commande.|Encomenda não encontrada neste dispositivo: use o mesmo perfil que fez a encomenda.
+Commande introuvable.|Encomenda não encontrada.
+Commande §B§ : |Encomenda §B§: 
+Ma fiche §B§. Ouvrez |A minha ficha de §B§. Abra 
+. Ouvrez |. Abra 
+ puis, dans Clients, collez ce message dans « Importer un message ».|, depois em Clientes, cole esta mensagem em « Importar uma mensagem ».
+Mise à jour de votre commande |Atualização da sua encomenda 
+, étape « |, etapa « 
+ ». Ouvrez | ». Abra 
+ puis collez ce message dans « Importer un message ».|, depois cole esta mensagem em « Importar uma mensagem ».
+ pour | para 
+Commande|Encomenda
+Client supprimé|Cliente eliminado
+Retour aux commandes|Voltar às encomendas
+Imprimer / enregistrer en PDF|Imprimir / guardar em PDF
+Acompte versé (|Sinal pago (
+Acompte versé|Sinal pago
+Reste à payer|Saldo a pagar
+Soldé|Pago na totalidade
+REÇU|RECIBO
+DEVIS|ORÇAMENTO
+<h2>Devis</h2>|<h2>Orçamento</h2>
+<h2>Reçu</h2>|<h2>Recibo</h2>
+>Devis<|>Orçamento<
+>Reçu<|>Recibo<
+Devis / reçu|Orçamento / recibo
+Devis valable jusqu'au |Orçamento válido até 
+Tél. +|Tel. +
+N° |N.º 
+Photo du tissu|Foto do tecido
+Photo du modèle|Foto do modelo
+Ajouter : |Adicionar: 
+Changer : |Alterar: 
+>Retirer<|>Remover<
+Envoyer les photos|Enviar as fotos
+Photo illisible. Essayez une autre image.|Foto ilegível. Tente outra imagem.
+Mémoire de l'appareil pleine : retirez des photos anciennes.|Memória do dispositivo cheia: remova fotos antigas.
+Le partage de photos n'est pas disponible ici : appuyez longuement sur une photo pour l'enregistrer.|A partilha de fotos não está disponível aqui: mantenha uma foto premida para a guardar.
+Espèces|Dinheiro
+Virement|Transferência
+Carte|Cartão
+Autre|Outro
+Acompte|Sinal
+Paiements|Pagamentos
+Montant (|Montante (
+>Mode<|>Método<
+Enregistrer le paiement|Registar o pagamento
+Total payé|Total pago
+Payé : |Pago: 
+>À payer<|>Por pagar<
+Paiement enregistré.|Pagamento registado.
+Entrez un montant supérieur à 0.|Introduza um montante superior a 0.
+Le montant dépasse le reste à payer.|O montante excede o saldo a pagar.
+Patron grandeur nature (A4)|Molde em tamanho real (A4)
+Patron grandeur nature|Molde em tamanho real
+Imprimez à 100 % sur du papier A4, sans « ajuster à la page ». Le carré de 10 cm de la première page sert à vérifier l'échelle. Collez les pages bord à bord.|Imprima a 100 % em papel A4, sem «ajustar à página». O quadrado de 10 cm da primeira página serve para verificar a escala. Cole as páginas bordo com bordo.
+Imprimer (|Imprimir (
+ pages A4)| páginas A4)
+Retour aux modèles|Voltar aos modelos
+Imprimez à 100 %, sans ajuster à la page.|Imprima a 100 %, sem ajustar à página.
+Assemblez les pages ligne par ligne, bord à bord.|Monte as páginas linha a linha, bordo com bordo.
+Les dimensions incluent des marges de couture approximatives.|As dimensões incluem margens de costura aproximadas.
+Vérifiez l'échelle : ce carré doit mesurer 10 cm|Verifique a escala: este quadrado deve medir 10 cm
+Page |Página 
+ · ligne | · linha 
+ · colonne | · coluna 
+page(s)|página(s)
+Total : |Total: 
+ pages| páginas
+Gilet|Colete
+Sweat|Sweatshirt
+Manteau|Sobretudo
+Tailleur|Tailleur
+Jupe droite|Saia reta
+Jupe|Saia
+Short|Calções
+Robe longue|Vestido comprido
+Caftan|Cafetã
+Pantalon jean|Calças de ganga
+Pantalon large|Calças largas
+Pantalon slim|Calças slim
+Pantalon évasé|Calças à boca de sino
+Tunique|Túnica
+Corset|Corpete
+Débardeur|Top de alças
+Trench|Trench coat
+Jogging|Calças de treino
+Legging|Leggings
+Sarouel|Calças harém
+Jupe évasée|Saia evasê
+Jupe crayon|Saia lápis
+Jupe portefeuille|Saia cruzada
+Jupe plissée|Saia plissada
+Jupe cloche|Saia godé
+Jupe sirène|Saia sereia
+Jupe ballon|Saia balão
+Mini-jupe|Minissaia
+Jupe longue|Saia comprida
+Robe droite|Vestido reto
+Robe trapèze|Vestido trapézio
+Robe ovale|Vestido oval
+Robe sirène|Vestido sereia
+Robe empire|Vestido império
+Robe cintrée|Vestido ajustado
+Robe portefeuille|Vestido cruzado
+Robe chemise|Vestido camiseiro
+Robe bustier|Vestido bustiê
+Robe de soirée|Vestido de noite
+Robe de mariée|Vestido de noiva
+Combinaison|Macacão
+Combishort|Macaquinho
+Salopette|Jardineira
+>Hauts<|>Partes de cima<
+>Vestes et manteaux<|>Casacos e sobretudos<
+>Bas<|>Partes de baixo<
+>Jupes<|>Saias<
+>Robes<|>Vestidos<
+>Tenues africaines<|>Trajes africanos<
+>Combinaisons<|>Macacões<
+label="Hauts"|label="Partes de cima"
+label="Vestes et manteaux"|label="Casacos e sobretudos"
+label="Bas"|label="Partes de baixo"
+label="Jupes"|label="Saias"
+label="Robes"|label="Vestidos"
+label="Tenues africaines"|label="Trajes africanos"
+label="Combinaisons"|label="Macacões"
+Haut Senator|Top Senator
+Complet sénégalais (haut)|Conjunto senegalês (parte de cima)
+Chemise Madiba|Camisa Madiba
+Chemise africaine|Camisa africana
+Veste col Mao|Casaco gola Mao
+>Tenues homme<|>Trajes de homem<
+label="Tenues homme"|label="Trajes de homem"
+Tableau de bord|Painel de controlo
+>7 jours<|>7 dias<
+>30 jours<|>30 dias<
+>12 mois<|>12 meses<
+>Tout<|>Tudo<
+Commandes passées|Encomendas feitas
+Montant commandé|Montante encomendado
+Encaissé|Cobrado
+Reste à encaisser|Por cobrar
+Encaissements par mois|Cobranças por mês
+Modèles les plus commandés|Modelos mais encomendados
+Modes de paiement|Métodos de pagamento
+Plus gros soldes à encaisser|Maiores saldos por cobrar
+Aucune donnée pour le moment. Les chiffres apparaissent dès la première commande.|Ainda não há dados. Os números aparecem com a primeira encomenda.
+Disponible dans l'espace professionnel.|Disponível no espaço profissional.
+Aucun solde à encaisser.|Nenhum saldo por cobrar.
+Aucun encaissement sur la période.|Nenhuma cobrança no período.
+Aucune commande sur la période.|Nenhuma encomenda no período.
+Date de livraison|Data de entrega
+Rappels de livraison|Lembretes de entrega
+Rappel de livraison (jours avant)|Lembrete de entrega (dias antes)
+En retard de |Atrasado em 
+Aujourd'hui|Hoje
+Dans |Em 
+ jour(s)| dia(s)
+Âge (enfants, en années)|Idade (crianças, em anos)
+ ans<| anos<
+Mesures standard pour |Medidas padrão para 
+ ans (estimation) : remplacez-les par les vraies mesures de l'enfant.| anos (estimativa): substitua-as pelas medidas reais da criança.
+>Enfants<|>Crianças<
+label="Enfants"|label="Crianças"
+Salopette enfant|Jardineira infantil
+Robe de baptême|Vestido de batizado
+Robe fillette|Vestido de menina
+Robe de cérémonie enfant|Vestido de cerimónia infantil
+Jupe fillette|Saia de menina
+Short garçon|Calções de menino
+Boubou enfant|Bubu infantil
+Pantalon enfant|Calças infantis
+Chemise garçon|Camisa de menino
+T-shirt enfant|T-shirt infantil
+Uniforme scolaire (chemisette)|Uniforme escolar (camisa de manga curta)
+Pyjama (haut)|Parte de cima do pijama
+Veste enfant|Casaco infantil
+Kaftan enfant|Cafetã infantil
+Barboteuse|Macacão curto de bebé
+Sauvegarde créée (|Cópia de segurança criada (
+ Ko).| Ko).
+Sauvegarde copiée.|Cópia de segurança copiada.
+Sauvegarde illisible ou incomplète.|Cópia de segurança ilegível ou incompleta.
+Sauvegarde invalide.|Cópia de segurança inválida.
+Aucune sauvegarde trouvée dans ce texte.|Nenhuma cópia de segurança encontrada neste texto.
+La sauvegarde contient les données de vos clients : gardez-la privée.|A cópia de segurança contém os dados dos seus clientes: mantenha-a privada.
+Inclure les photos (plus volumineux)|Incluir as fotos (maior)
+Créer la sauvegarde|Criar cópia de segurança
+Collez une sauvegarde : les clients et commandes manquants sont ajoutés, sans effacer l'existant.|Cole uma cópia de segurança: os clientes e encomendas em falta são adicionados, sem apagar o que existe.
+Coller une sauvegarde|Colar uma cópia de segurança
+Restauration terminée : |Restauro concluído: 
+ client(s) et | cliente(s) e 
+ commande(s) ajouté(s).| encomenda(s) adicionada(s).
+Sauvegarde|Cópia de segurança
+Restaurer|Restaurar
+Ourlet pantalon|Bainha de calças
+Ourlet jupe / robe|Bainha de saia / vestido
+Raccourcir les manches|Encurtar as mangas
+Ourlet jean (surjet original)|Bainha de ganga (bainha original)
+Rétrécir (taille / côtés)|Apertar (cintura / lados)
+Élargir / agrandir|Alargar / aumentar
+Changer une fermeture éclair|Trocar um fecho de correr
+Remplacer / recoudre des boutons|Substituir / coser botões
+Réparer une déchirure / repriser|Reparar um rasgão / cerzir
+Changer la doublure|Trocar o forro
+Ajuster les épaules|Ajustar os ombros
+Changer un élastique|Trocar um elástico
+Réparer / refaire une poche|Reparar / refazer um bolso
+Transformation (modèle différent)|Transformação (outro modelo)
+Reprendre les coutures|Refazer as costuras
+Autre retouche|Outro arranjo
+>Retouches<|>Arranjos<
+label="Retouches"|label="Arranjos"
+Note / consignes|Nota / instruções
+Ex. raccourcir de 3 cm|Ex. encurtar 3 cm
+Prix de cette commande (|Preço desta encomenda (
+Stock bas|Stock baixo
+>Tissus<|>Tecidos<
+>Fournitures<|>Materiais<
+Tissus|Tecidos
+Fournitures|Materiais
+Fourniture|Material
+Ajouter un article|Adicionar um artigo
+Alerte (stock bas)|Alerta (stock baixo)
+Unité|Unidade
+Quantité|Quantidade
+Prix par unité (|Preço por unidade (
+, facultatif)|, opcional)
+Aucun article. Ajoutez votre premier tissu ou fourniture ci-dessus.|Ainda não há artigos. Adicione acima o seu primeiro tecido ou material.
+Entrez un nom pour ajouter un article.|Escreva um nome para adicionar um artigo.
+Entrez une quantité valide.|Introduza uma quantidade válida.
+Article ajouté.|Artigo adicionado.
+pièce|peça
+bobine|bobina
+paquet|pacote
+aria-label="Retirer 1"|aria-label="Remover 1"
+aria-label="Ajouter 1"|aria-label="Adicionar 1"
+Déduire du stock|Descontar do stock
+Tissu utilisé|Tecido usado
+Déduire |Descontar 
+ m du stock| m do stock
+Stock insuffisant (|Stock insuficiente (
+ m disponibles).| m disponíveis).
+Stock mis à jour.|Stock atualizado.
+ article(s) de stock ajouté(s).| artigo(s) de stock adicionado(s).
+>Nom<|>Nome<
+Tissu|Tecido
+Hauteur totale|Altura total
+>Neutre<|>Neutra<
+>Femme<|>Mulher<
+>Homme<|>Homem<
+Silhouette du mannequin|Silhueta do manequim
+Teint du mannequin|Tom de pele do manequim
+Good Luck (haut long)|Túnica Good Luck (longa)
+Good Luck (haut court)|Túnica Good Luck (curta)
+Good Luck (ensemble long)|Conjunto Good Luck (longo)
+Good Luck (ensemble court)|Conjunto Good Luck (curto)
+Pantalon droit|Calças retas
+Devant pantalon ×|Frente das calças ×
+Dos pantalon ×|Costas das calças ×
+Ceinture pantalon|Cós das calças
+Couleur de broderie et finitions|Cor do bordado e dos acabamentos
+Essayer sur une photo|Experimentar numa foto
+Essayage sur photo|Prova em foto
+Choisissez une photo du client en entier, debout, de face, sur fond uni. La photo reste sur votre appareil et n'est pas enregistrée.|Escolha uma foto do cliente de corpo inteiro, de pé, de frente, em fundo liso. A foto fica no seu dispositivo e não é guardada.
+Choisir une photo|Escolher uma foto
+Touchez le sommet de la tête.|Toque no topo da cabeça.
+Touchez les pieds, au sol.|Toque nos pés, no chão.
+Aperçu prêt. Réglez les curseurs ou recommencez.|Pré-visualização pronta. Ajuste os controlos ou recomece.
+Opacité|Opacidade
+Hauteur de l'habit|Altura da peça
+Largeur|Largura
+Mode réaliste|Modo realista
+Mode opaque|Modo opaco
+Recommencer|Recomeçar
+Créer l'image à enregistrer|Criar imagem para guardar
+Partager l'aperçu|Partilhar a pré-visualização
+Touchez d'abord le sommet de la tête, puis les pieds.|Toque primeiro no topo da cabeça e depois nos pés.
+Partage impossible ici : appuyez longuement sur l'image pour l'enregistrer.|Não é possível partilhar aqui: mantenha a imagem premida para a guardar.
+Mode d'emploi|Guia de utilização
+>Pour tous<|>Para todos<
+>Pour le pro<|>Para o profissional<
+>À savoir<|>Bom saber<
+Créer un profil|Criar um perfil
+Dans Profil (ou Clients pour le pro), ajoutez le nom, le téléphone et, pour un enfant, son âge.|Em Perfil (ou Clientes, para o profissional), adicione o nome, o telefone e, para uma criança, a idade.
+Saisir les mesures|Introduzir as medidas
+Dans Mesures, remplissez les 8 mesures en centimètres et choisissez la silhouette du mannequin. Sans mesures, des mesures standard sont utilisées.|Em Medidas, preencha as 8 medidas em centímetros e escolha a silhueta do manequim. Sem medidas, usam-se medidas padrão.
+Choisir un modèle|Escolher um modelo
+Dans Modèles, choisissez une catégorie puis un modèle. Le mannequin 3D porte l'habit à la taille du client : faites-le tourner et changez la couleur du tissu, de la broderie et le teint.|Em Modelos, escolha uma categoria e depois um modelo. O manequim 3D veste a peça ao tamanho do cliente: rode-o e mude a cor do tecido, do bordado e o tom de pele.
+Le bouton Essayer sur une photo pose l'habit sur la photo du client. La photo reste sur votre appareil.|O botão Experimentar numa foto coloca a peça na foto do cliente. A foto fica no seu dispositivo.
+Commander|Fazer uma encomenda
+Le client touche Envoyer à l'atelier : un message avec sa commande et ses mesures est prêt à envoyer par WhatsApp ou autre.|O cliente toca em Enviar ao atelier: fica pronta uma mensagem com a encomenda e as medidas para enviar por WhatsApp ou outra aplicação.
+Suivre sa commande|Acompanhar uma encomenda
+Dans Commandes, chaque commande a une étape, une date de livraison, une note et des photos. Le pro envoie l'état au client par un message à coller dans Importer un message.|Em Encomendas, cada encomenda tem uma etapa, uma data de entrega, uma nota e fotos. O profissional envia o estado ao cliente numa mensagem para colar em Importar uma mensagem.
+Recevoir une commande|Receber uma encomenda
+Collez le message du client dans Clients, Importer un message : le client et la commande sont créés.|Cole a mensagem do cliente em Clientes, Importar uma mensagem: o cliente e a encomenda são criados.
+Faire avancer une commande|Fazer avançar uma encomenda
+Dans Commandes, touchez Passer à l'étape suivante. Modifiez le prix, ajoutez des photos et une date de livraison. Les rappels s'affichent sur l'Accueil.|Em Encomendas, toque em Passar à etapa seguinte. Altere o preço, adicione fotos e uma data de entrega. Os lembretes aparecem no Início.
+Devis et reçus|Orçamentos e recibos
+Touchez Devis / reçu sur une commande, enregistrez les paiements (acompte, mode de paiement), puis imprimez ou enregistrez en PDF.|Toque em Orçamento / recibo numa encomenda, registe os pagamentos (sinal, método de pagamento) e depois imprima ou guarde em PDF.
+Patron et tissu|Molde e tecido
+Dans Modèles, l'espace pro affiche les calculs, les pièces à couper, le tissu estimé et le patron grandeur nature en pages A4 à assembler. Déduisez le tissu du stock.|Em Modelos, o espaço profissional mostra os cálculos, as peças a cortar, o tecido estimado e o molde em tamanho real em páginas A4 para montar. Desconte o tecido do stock.
+Stock et tableau de bord|Stock e painel de controlo
+Stock : tissus et fournitures avec alerte de stock bas. Tableau de bord : montants commandés, encaissements, modèles les plus commandés et soldes à encaisser.|Stock: tecidos e materiais com alerta de stock baixo. Painel de controlo: montantes encomendados, cobranças, modelos mais encomendados e saldos por cobrar.
+Dans Paramètres, créez une sauvegarde de vos clients et commandes et gardez-la en lieu sûr. Restaurez-la au besoin.|Em Configurações, crie uma cópia de segurança dos seus clientes e encomendas e guarde-a num local seguro. Restaure-a quando precisar.
+Données privées|Dados privados
+Vos données sont privées et se synchronisent entre vos appareils. Elles ne sont partagées que par les messages que vous envoyez.|Os seus dados são privados e sincronizam-se entre os seus dispositivos. Só são partilhados pelas mensagens que enviar.
+Mannequin 3D indisponible sur cet appareil : dessin de face affiché. Utilisez Essayer sur une photo pour une vue plus réaliste.|Manequim 3D indisponível neste dispositivo: desenho de frente apresentado. Use Experimentar numa foto para uma vista mais realista.
+Langue|Idioma
+Dans Paramètres, choisissez Français, English, Español, Português ou العربية.|Em Configurações, escolha Français, English, Español, Português ou العربية.
+Limites|Limites
+Le mannequin est une représentation : vérifiez les formules et les proportions sur un premier essai en tissu.|O manequim é uma representação: verifique as fórmulas e as proporções num primeiro teste em tecido.
+Nom de l'atelier|Nome do atelier
+Téléphone de l'atelier (avec l'indicatif du pays)|Telefone do atelier (com o indicativo do país)
+Devise|Moeda
+Validité du devis (jours, facultatif)|Validade do orçamento (dias, opcional)
+Conditions de paiement (facultatif)|Condições de pagamento (opcional)
+Ces réglages restent dans votre espace privé. Le téléphone sert à envoyer les messages directement par WhatsApp.|Estas configurações ficam no seu espaço privado. O telefone serve para enviar mensagens diretamente pelo WhatsApp.
+Ex. Atelier Diop|Ex. Atelier Diop
+Les prix sont enregistrés dès que vous quittez le champ.|Os preços são guardados assim que sair do campo.`;
+const AR=`Aucun atelier enregistré. Ajoutez celui de votre couturier dans Paramètres.|لا توجد ورشة محفوظة. أضف ورشة خياطك من الإعدادات.
+Ajouter un atelier|إضافة ورشة
+>Atelier<|>الورشة<
+Mes ateliers|ورشاتي
+Aucun atelier enregistré.|لا توجد ورشة محفوظة.
+Code de l'atelier|رمز الورشة
+Ajouter cet atelier|إضافة هذه الورشة
+Inviter des clients|دعوة العملاء
+Créez un code avec le nom, le téléphone et les prix de votre atelier. Vos clients l'ajoutent pour vous envoyer leurs commandes.|أنشئ رمزًا باسم ورشتك وهاتفها وأسعارها. يضيفه عملاؤك لإرسال طلباتهم إليك.
+Créer le code atelier|إنشاء رمز الورشة
+Renseignez d'abord le nom et le téléphone de l'atelier ci-dessus.|املأ أولًا اسم الورشة وهاتفها أعلاه.
+Code de l'atelier invalide ou incomplet.|رمز الورشة غير صالح أو ناقص.
+Atelier « |الورشة « 
+ » ajouté. Créez votre profil pour commander.| » تمت إضافتها. أنشئ ملفك لتطلب.
+ » ajouté.| » تمت إضافتها.
+Bonjour ! Voici l'application de |مرحبًا! هذا تطبيق 
+. Ouvrez ce lien : l'atelier s'ajoute tout seul. |. افتح هذا الرابط: تُضاف الورشة تلقائيًا. 
+. Ouvrez l'application, puis Paramètres, Code de l'atelier, et collez ce message. |. افتح التطبيق، ثم الإعدادات، رمز الورشة، والصق هذه الرسالة. 
+Décalage horizontal|الإزاحة الأفقية
+Ajusté sur les épaules. Pour régler les hanches, touchez la hanche gauche puis la hanche droite (facultatif).|تم الضبط على الكتفين. لضبط الوركين، المس الورك الأيسر ثم الأيمن (اختياري).
+Touchez maintenant l'autre hanche.|المس الآن الورك الآخر.
+Ajusté sur les épaules et les hanches. Réglez les curseurs si besoin.|تم الضبط على الكتفين والوركين. اضبط المنزلقات عند الحاجة.
+Aperçu prêt. Pour un meilleur ajustement : touchez l'épaule gauche puis l'épaule droite du client (facultatif).|المعاينة جاهزة. لضبط أفضل: المس الكتف الأيسر ثم الأيمن للعميل (اختياري).
+Touchez maintenant l'autre épaule.|المس الآن الكتف الآخر.
+Ajusté sur les épaules. Réglez les curseurs si besoin.|تم الضبط على الكتفين. عدّل المؤشرات عند الحاجة.
+Annuler le dernier point|تراجع عن آخر نقطة
+Deuxième habit (facultatif)|قطعة ثانية (اختياري)
+>Aucun<|>بدون<
+Motif du tissu|نقش القماش
+>Uni<|>سادة<
+>Rayures<|>خطوط<
+>Pois<|>نقاط<
+>Carreaux<|>مربعات<
+>Wax<|>واكس<
+T-shirt|تيشيرت
+Blouse|بلوزة
+Bermuda|برمودا
+Djellaba|جلابة
+Grand boubou|بوبو كبير
+Gandoura|قندورة
+>Clients<|>العملاء<
+>Client<|>العميل<
+Espace client|مساحة العميل
+Espace professionnel|المساحة المهنية
+Paramètres|الإعدادات
+Accueil|الرئيسية
+>Profil<|>الملف الشخصي<
+Mesures enregistrées. Voici l'habit sur le mannequin de |تم حفظ المقاسات. هذه هي القطعة على مانيكان 
+Mesures|المقاسات
+Modèles d'habit|نماذج الملابس
+Modèles|النماذج
+Commandes en cours|الطلبات الجارية
+Commandes|الطلبات
+Prix|الأسعار
+Données sur cet appareil seulement (accès en lecture seule).|البيانات على هذا الجهاز فقط (وصول للقراءة فقط).
+Données sur cet appareil seulement.|البيانات على هذا الجهاز فقط.
+Vos données sont privées et synchronisées entre vos appareils.|بياناتك خاصة ومتزامنة بين أجهزتك.
+Nouveau client|عميل جديد
+Mon profil|ملفي الشخصي
+Clients existants|العملاء الحاليون
+Changer de profil|تغيير الملف الشخصي
+Nouvelle commande|طلب جديد
+Aucune commande en cours. Créez-en une depuis Commandes.|لا توجد طلبات جارية. أنشئ طلبًا من قسم الطلبات.
+Dernières commandes|آخر الطلبات
+Aucune commande pour le moment.|لا توجد طلبات حتى الآن.
+Client actif : |العميل النشط: 
+Aucun client actif. Mesures standard utilisées.|لا يوجد عميل نشط. تُستخدم مقاسات قياسية.
+Nom complet|الاسم الكامل
+Téléphone|الهاتف
+>Ajouter<|>إضافة<
+Importer un message|استيراد رسالة
+Collez un message reçu : fiche, commande ou état de commande.|الصق رسالة مستلمة: ملف أو طلب أو حالة طلب.
+>Importer<|>استيراد<
+Aucun client. Ajoutez le premier ci-dessus.|لا يوجد عملاء بعد. أضف الأول أعلاه.
+Sans téléphone|بدون هاتف
+>Actif<|>نشط<
+>Choisir<|>اختيار<
+>Partager<|>مشاركة<
+>Suppr.<|>حذف<
+aria-label="Supprimer"|aria-label="حذف"
+Choisissez ou créez un client pour enregistrer ses mesures.|اختر عميلًا أو أنشئ واحدًا لحفظ مقاساته.
+Ajouter un client|إضافة عميل
+Créer mon profil|إنشاء ملفي الشخصي
+Enregistrer les mesures|حفظ المقاسات
+Taille estimée ≈|الطول التقديري ≈
+Poitrine|الصدر
+poitrine|الصدر
+Taille|الخصر
+Bassin|الورك
+bassin|الورك
+Épaules|الكتفان
+Cuisse|الفخذ
+Manches|الأكمام
+Manche|الكُم
+Entrejambe|طول الساق الداخلي
+Longueur|الطول
+Emmanchure|فتحة الذراع
+Encolure|فتحة الرقبة
+Hanches|الوركان
+Largeur du panneau|عرض اللوحة
+Panneau ×|اللوحة ×
+Devant ×|الأمام ×
+Dos ×|الخلف ×
+Col ×|الياقة ×
+Ceinture|حزام الخصر
+Devant · pli au centre|الأمام · طيّ في المنتصف
+droit-fil|اتجاه القماش
+Sur le mannequin|على المانيكان
+Glissez sur le mannequin pour le tourner en 3D.|اسحب على المانيكان لتدويره بتقنية 3D.
+>Face<|>أمام<
+>Dos<|>خلف<
+Mannequin aux mesures standard : enregistrez des mesures pour l'adapter|مانيكان بمقاسات قياسية: احفظ المقاسات لتكييفه
+Mannequin aux mesures de |مانيكان بمقاسات 
+Envoyer à l'atelier : |إرسال إلى الورشة: 
+Envoyer à l'atelier|إرسال إلى الورشة
+Couleur du tissu|لون القماش
+Calculs|الحسابات
+<h2>Tissu</h2>|<h2>القماش</h2>
+Tissu estimé|القماش المقدَّر
+Largeur du tissu (cm)|عرض القماش (سم)
+Rétrécissement (%)|الانكماش (%)
+Pièces à couper|القطع المطلوب قصها
+Une pièce dépasse la largeur du tissu : coupez-la en deux parties.|إحدى القطع أعرض من القماش: اقصصها إلى جزأين.
+Imprimer le patron|طباعة الباترون
+Pantalon|بنطلون
+Chemise|قميص
+Veste / costume|جاكيت / بدلة
+Robe|فستان
+Étape : |المرحلة: 
+Passer à : |الانتقال إلى: 
+Coupe|القص
+Couture|الخياطة
+Finition|التشطيب
+Livrée|تم التسليم
+>Livrées<|>تم تسليمها<
+>Toutes<|>الكل<
+>En cours<|>جارية<
+>Modèle<|>النموذج<
+Créer la commande|إنشاء الطلب
+Envoyer l'état au client|إرسال الحالة إلى العميل
+Envoyer l'état à |إرسال الحالة إلى 
+Partager la fiche de |مشاركة ملف 
+Toute personne qui reçoit ce message peut lire ces mesures. Envoyez-le seulement à qui vous voulez.|يمكن لأي شخص يستلم هذه الرسالة قراءة هذه المقاسات. أرسلها فقط لمن تثق به.
+Message à partager|رسالة للمشاركة
+>Copier<|>نسخ<
+>Envoyer<|>إرسال<
+Ouvrir dans WhatsApp|فتح في واتساب
+Message de fiche à importer|رسالة ملف للاستيراد
+Entrez un nom pour ajouter un client.|أدخل اسمًا لإضافة عميل.
+ ajouté. Saisissez maintenant ses mesures.| تمت إضافته. أدخل الآن مقاساته.
+Renseignez toutes les mesures en centimètres : |املأ جميع المقاسات بالسنتيمتر: 
+ manque ou est invalide.| مفقود أو غير صالح.
+Choisissez d'abord un client.|اختر عميلًا أولًا.
+Enregistrez d'abord les mesures du client avant d'envoyer la commande.|احفظ مقاسات العميل أولًا قبل إرسال الطلب.
+Enregistrez d'abord vos mesures pour envoyer la commande.|احفظ مقاساتك أولًا لإرسال الطلب.
+Enregistrez d'abord les mesures de |احفظ أولًا مقاسات 
+ avant de partager sa fiche.| قبل مشاركة ملفه.
+Aucun code de fiche trouvé dans ce texte.|لم يتم العثور على رمز ملف في هذا النص.
+Code illisible ou incomplet.|رمز غير مقروء أو ناقص.
+Fiche invalide : la mesure « |ملف غير صالح: المقاس « 
+ » manque ou est incorrecte.| » مفقود أو غير صحيح.
+Fiche de |ملف 
+ importée.| تم استيراده.
+Message d'état invalide.|رسالة حالة غير صالحة.
+Message copié.|تم نسخ الرسالة.
+Copie impossible ici : touchez le texte, sélectionnez-le puis copiez-le.|لا يمكن النسخ هنا: المس النص وحدده ثم انسخه.
+Commande créée. Envoyez le message ci-dessous à l'atelier.|تم إنشاء الطلب. أرسل الرسالة أدناه إلى الورشة.
+Commande créée.|تم إنشاء الطلب.
+Commande reçue de |طلب مستلم من 
+Commande mise à jour : |تم تحديث الطلب: 
+Commande introuvable sur cet appareil : utilisez le même profil que celui qui a passé la commande.|لم يتم العثور على الطلب على هذا الجهاز: استخدم نفس الملف الذي قدّم الطلب.
+Commande introuvable.|لم يتم العثور على الطلب.
+Commande §B§ : |طلب §B§: 
+Ma fiche §B§. Ouvrez |ملفي في §B§. افتح 
+. Ouvrez |. افتح 
+ puis, dans Clients, collez ce message dans « Importer un message ».|، ثم في قسم العملاء الصق هذه الرسالة في « استيراد رسالة ».
+Mise à jour de votre commande |تحديث لطلبك 
+, étape « |، المرحلة « 
+ ». Ouvrez | ». افتح 
+ puis collez ce message dans « Importer un message ».|، ثم الصق هذه الرسالة في « استيراد رسالة ».
+ pour | لـ 
+Commande|طلب
+Client supprimé|عميل محذوف
+Retour aux commandes|العودة إلى الطلبات
+Imprimer / enregistrer en PDF|طباعة / حفظ بصيغة PDF
+Acompte versé (|العربون المدفوع (
+Acompte versé|العربون المدفوع
+Reste à payer|المبلغ المتبقي
+Soldé|مدفوع بالكامل
+REÇU|إيصال
+DEVIS|عرض سعر
+<h2>Devis</h2>|<h2>عرض سعر</h2>
+<h2>Reçu</h2>|<h2>إيصال</h2>
+>Devis<|>عرض سعر<
+>Reçu<|>إيصال<
+Devis / reçu|عرض سعر / إيصال
+Devis valable jusqu'au |عرض السعر ساري حتى 
+Tél. +|هاتف +
+N° |رقم 
+Photo du tissu|صورة القماش
+Photo du modèle|صورة النموذج
+Ajouter : |إضافة: 
+Changer : |تغيير: 
+>Retirer<|>إزالة<
+Envoyer les photos|إرسال الصور
+Photo illisible. Essayez une autre image.|الصورة غير مقروءة. جرّب صورة أخرى.
+Mémoire de l'appareil pleine : retirez des photos anciennes.|ذاكرة الجهاز ممتلئة: احذف بعض الصور القديمة.
+Le partage de photos n'est pas disponible ici : appuyez longuement sur une photo pour l'enregistrer.|مشاركة الصور غير متاحة هنا: اضغط مطولًا على الصورة لحفظها.
+Espèces|نقدًا
+Virement|تحويل بنكي
+Carte|بطاقة
+Autre|أخرى
+Acompte|عربون
+Paiements|المدفوعات
+Montant (|المبلغ (
+>Mode<|>الطريقة<
+Enregistrer le paiement|تسجيل الدفعة
+Total payé|إجمالي المدفوع
+Payé : |المدفوع: 
+>À payer<|>غير مدفوع<
+Paiement enregistré.|تم تسجيل الدفعة.
+Entrez un montant supérieur à 0.|أدخل مبلغًا أكبر من 0.
+Le montant dépasse le reste à payer.|المبلغ يتجاوز المتبقي.
+Patron grandeur nature (A4)|باترون بالحجم الحقيقي (A4)
+Patron grandeur nature|باترون بالحجم الحقيقي
+Imprimez à 100 % sur du papier A4, sans « ajuster à la page ». Le carré de 10 cm de la première page sert à vérifier l'échelle. Collez les pages bord à bord.|اطبع بنسبة 100٪ على ورق A4 دون خيار «ملاءمة الصفحة». المربع 10 سم في الصفحة الأولى للتحقق من المقياس. الصق الصفحات حافة بحافة.
+Imprimer (|طباعة (
+ pages A4)| صفحات A4)
+Retour aux modèles|العودة إلى النماذج
+Imprimez à 100 %, sans ajuster à la page.|اطبع بنسبة 100٪ دون ملاءمة الصفحة.
+Assemblez les pages ligne par ligne, bord à bord.|اجمع الصفحات صفًا بصف، حافة بحافة.
+Les dimensions incluent des marges de couture approximatives.|الأبعاد تشمل هوامش خياطة تقريبية.
+Vérifiez l'échelle : ce carré doit mesurer 10 cm|تحقق من المقياس: يجب أن يقيس هذا المربع 10 سم
+Page |صفحة 
+ · ligne | · صف 
+ · colonne | · عمود 
+page(s)|صفحة
+Total : |المجموع: 
+ pages| صفحات
+Gilet|صدرية
+Sweat|سويت شيرت
+Manteau|معطف
+Tailleur|بدلة نسائية
+Jupe droite|تنورة مستقيمة
+Jupe|تنورة
+Short|شورت
+Robe longue|فستان طويل
+Caftan|قفطان
+Pantalon jean|بنطلون جينز
+Pantalon large|بنطلون واسع
+Pantalon slim|بنطلون ضيق
+Pantalon évasé|بنطلون واسع من الأسفل
+Tunique|تونيك
+Corset|مشد
+Débardeur|توب بحمالات
+Trench|معطف ترنش
+Jogging|بنطلون رياضي
+Legging|ليغينغ
+Sarouel|سروال علاء الدين
+Jupe évasée|تنورة واسعة
+Jupe crayon|تنورة قلم
+Jupe portefeuille|تنورة متقاطعة
+Jupe plissée|تنورة مطوية
+Jupe cloche|تنورة دائرية
+Jupe sirène|تنورة حورية البحر
+Jupe ballon|تنورة بالون
+Mini-jupe|ميني جيب
+Jupe longue|تنورة طويلة
+Robe droite|فستان مستقيم
+Robe trapèze|فستان على شكل A
+Robe ovale|فستان بيضاوي
+Robe sirène|فستان حورية البحر
+Robe empire|فستان إمباير
+Robe cintrée|فستان مجسّم
+Robe portefeuille|فستان متقاطع
+Robe chemise|فستان قميص
+Robe bustier|فستان بدون حمالات
+Robe de soirée|فستان سهرة
+Robe de mariée|فستان زفاف
+Combinaison|جامبسوت
+Combishort|جامبسوت قصير
+Salopette|أفرول
+>Hauts<|>الأجزاء العلوية<
+>Vestes et manteaux<|>جاكيتات ومعاطف<
+>Bas<|>الأجزاء السفلية<
+>Jupes<|>التنانير<
+>Robes<|>الفساتين<
+>Tenues africaines<|>الأزياء الأفريقية<
+>Combinaisons<|>الجامبسوت<
+label="Hauts"|label="الأجزاء العلوية"
+label="Vestes et manteaux"|label="جاكيتات ومعاطف"
+label="Bas"|label="الأجزاء السفلية"
+label="Jupes"|label="التنانير"
+label="Robes"|label="الفساتين"
+label="Tenues africaines"|label="الأزياء الأفريقية"
+label="Combinaisons"|label="الجامبسوت"
+Haut Senator|قميص سيناتور
+Complet sénégalais (haut)|طقم سنغالي (الجزء العلوي)
+Chemise Madiba|قميص مانديلا
+Chemise africaine|قميص أفريقي
+Veste col Mao|جاكيت بياقة ماو
+>Tenues homme<|>أزياء الرجال<
+label="Tenues homme"|label="أزياء الرجال"
+Tableau de bord|لوحة التحكم
+>7 jours<|>7 أيام<
+>30 jours<|>30 يومًا<
+>12 mois<|>12 شهرًا<
+>Tout<|>الكل<
+Commandes passées|الطلبات المقدّمة
+Montant commandé|المبلغ المطلوب
+Encaissé|المحصَّل
+Reste à encaisser|المتبقي للتحصيل
+Encaissements par mois|المدفوعات المحصّلة شهريًا
+Modèles les plus commandés|النماذج الأكثر طلبًا
+Modes de paiement|طرق الدفع
+Plus gros soldes à encaisser|أكبر الأرصدة المستحقة
+Aucune donnée pour le moment. Les chiffres apparaissent dès la première commande.|لا توجد بيانات بعد. تظهر الأرقام مع أول طلب.
+Disponible dans l'espace professionnel.|متاح في المساحة المهنية.
+Aucun solde à encaisser.|لا توجد أرصدة للتحصيل.
+Aucun encaissement sur la période.|لا توجد مدفوعات في هذه الفترة.
+Aucune commande sur la période.|لا توجد طلبات في هذه الفترة.
+Date de livraison|تاريخ التسليم
+Rappels de livraison|تذكيرات التسليم
+Rappel de livraison (jours avant)|تذكير التسليم (أيام قبل)
+En retard de |متأخر بمقدار 
+Aujourd'hui|اليوم
+Dans |بعد 
+ jour(s)| يوم/أيام
+Âge (enfants, en années)|العمر (للأطفال، بالسنوات)
+ ans<| سنة<
+Mesures standard pour |مقاسات قياسية لعمر 
+ ans (estimation) : remplacez-les par les vraies mesures de l'enfant.| سنة (تقدير): استبدلها بالمقاسات الحقيقية للطفل.
+>Enfants<|>الأطفال<
+label="Enfants"|label="الأطفال"
+Salopette enfant|أفرول للأطفال
+Robe de baptême|فستان التعميد
+Robe fillette|فستان بنت
+Robe de cérémonie enfant|فستان مناسبات للأطفال
+Jupe fillette|تنورة بنت
+Short garçon|شورت ولد
+Boubou enfant|بوبو للأطفال
+Pantalon enfant|بنطلون للأطفال
+Chemise garçon|قميص ولد
+T-shirt enfant|تي شيرت للأطفال
+Uniforme scolaire (chemisette)|زي مدرسي (قميص بأكمام قصيرة)
+Pyjama (haut)|علوي البيجامة
+Veste enfant|جاكيت للأطفال
+Kaftan enfant|قفطان للأطفال
+Barboteuse|رومبر
+Sauvegarde créée (|تم إنشاء النسخة الاحتياطية (
+ Ko).| ك.ب).
+Sauvegarde copiée.|تم نسخ النسخة الاحتياطية.
+Sauvegarde illisible ou incomplète.|النسخة الاحتياطية غير مقروءة أو ناقصة.
+Sauvegarde invalide.|نسخة احتياطية غير صالحة.
+Aucune sauvegarde trouvée dans ce texte.|لم يتم العثور على نسخة احتياطية في هذا النص.
+La sauvegarde contient les données de vos clients : gardez-la privée.|تحتوي النسخة الاحتياطية على بيانات عملائك: احتفظ بها بخصوصية.
+Inclure les photos (plus volumineux)|تضمين الصور (حجم أكبر)
+Créer la sauvegarde|إنشاء نسخة احتياطية
+Collez une sauvegarde : les clients et commandes manquants sont ajoutés, sans effacer l'existant.|الصق نسخة احتياطية: تتم إضافة العملاء والطلبات الناقصة دون حذف الموجود.
+Coller une sauvegarde|لصق نسخة احتياطية
+Restauration terminée : |اكتملت الاستعادة: 
+ client(s) et | عميل/عملاء و 
+ commande(s) ajouté(s).| طلب/طلبات مضافة.
+Sauvegarde|النسخة الاحتياطية
+Restaurer|استعادة
+Ourlet pantalon|تقصير بنطلون
+Ourlet jupe / robe|تقصير تنورة / فستان
+Raccourcir les manches|تقصير الأكمام
+Ourlet jean (surjet original)|تقصير الجينز (بالحافة الأصلية)
+Rétrécir (taille / côtés)|تضييق (الخصر / الجانبين)
+Élargir / agrandir|توسيع / تكبير
+Changer une fermeture éclair|تغيير سحّاب
+Remplacer / recoudre des boutons|استبدال / خياطة أزرار
+Réparer une déchirure / repriser|إصلاح تمزق / رتق
+Changer la doublure|تغيير البطانة
+Ajuster les épaules|تعديل الكتفين
+Changer un élastique|تغيير مطاط
+Réparer / refaire une poche|إصلاح / إعادة صنع جيب
+Transformation (modèle différent)|تحويل (إلى نموذج مختلف)
+Reprendre les coutures|إعادة خياطة الدرزات
+Autre retouche|تعديل آخر
+>Retouches<|>التعديلات<
+label="Retouches"|label="التعديلات"
+Note / consignes|ملاحظة / تعليمات
+Ex. raccourcir de 3 cm|مثال: تقصير 3 سم
+Prix de cette commande (|سعر هذا الطلب (
+Stock bas|مخزون منخفض
+>Tissus<|>الأقمشة<
+>Fournitures<|>المستلزمات<
+Tissus|الأقمشة
+Fournitures|المستلزمات
+Fourniture|مستلزم
+Ajouter un article|إضافة صنف
+Alerte (stock bas)|تنبيه (مخزون منخفض)
+Unité|الوحدة
+Quantité|الكمية
+Prix par unité (|السعر لكل وحدة (
+, facultatif)|، اختياري)
+Aucun article. Ajoutez votre premier tissu ou fourniture ci-dessus.|لا توجد أصناف بعد. أضف أعلاه أول قماش أو مستلزم.
+Entrez un nom pour ajouter un article.|أدخل اسمًا لإضافة صنف.
+Entrez une quantité valide.|أدخل كمية صالحة.
+Article ajouté.|تمت إضافة الصنف.
+pièce|قطعة
+bobine|بكرة
+paquet|علبة
+aria-label="Retirer 1"|aria-label="إزالة 1"
+aria-label="Ajouter 1"|aria-label="إضافة 1"
+Déduire du stock|خصم من المخزون
+Tissu utilisé|القماش المستخدم
+Déduire |خصم 
+ m du stock| م من المخزون
+Stock insuffisant (|المخزون غير كافٍ (
+ m disponibles).| م متاحة).
+Stock mis à jour.|تم تحديث المخزون.
+ article(s) de stock ajouté(s).| صنف/أصناف مخزون مضافة.
+>Nom<|>الاسم<
+Tissu|قماش
+Hauteur totale|الطول الكلي
+>Neutre<|>محايد<
+>Femme<|>أنثى<
+>Homme<|>ذكر<
+Silhouette du mannequin|شكل جسم المانيكان
+Teint du mannequin|لون بشرة المانيكان
+Good Luck (haut long)|تونيك جود لاك (طويل)
+Good Luck (haut court)|تونيك جود لاك (قصير)
+Good Luck (ensemble long)|طقم جود لاك (طويل)
+Good Luck (ensemble court)|طقم جود لاك (قصير)
+Pantalon droit|بنطلون مستقيم
+Devant pantalon ×|أمام البنطلون ×
+Dos pantalon ×|خلف البنطلون ×
+Ceinture pantalon|حزام البنطلون
+Couleur de broderie et finitions|لون التطريز والتشطيبات
+Essayer sur une photo|تجربة على صورة
+Essayage sur photo|تجربة على صورة
+Choisissez une photo du client en entier, debout, de face, sur fond uni. La photo reste sur votre appareil et n'est pas enregistrée.|اختر صورة للعميل كاملة الجسم، واقفًا ومواجهًا للكاميرا، على خلفية سادة. تبقى الصورة على جهازك ولا تُحفظ.
+Choisir une photo|اختيار صورة
+Touchez le sommet de la tête.|المس أعلى الرأس.
+Touchez les pieds, au sol.|المس القدمين على الأرض.
+Aperçu prêt. Réglez les curseurs ou recommencez.|المعاينة جاهزة. اضبط المنزلقات أو ابدأ من جديد.
+Opacité|الشفافية
+Hauteur de l'habit|ارتفاع القطعة
+Largeur|العرض
+Mode réaliste|وضع واقعي
+Mode opaque|وضع معتم
+Recommencer|ابدأ من جديد
+Créer l'image à enregistrer|إنشاء صورة للحفظ
+Partager l'aperçu|مشاركة المعاينة
+Touchez d'abord le sommet de la tête, puis les pieds.|المس أولًا أعلى الرأس ثم القدمين.
+Partage impossible ici : appuyez longuement sur l'image pour l'enregistrer.|لا يمكن المشاركة هنا: اضغط مطولًا على الصورة لحفظها.
+Mode d'emploi|دليل الاستخدام
+>Pour tous<|>للجميع<
+>Pour le pro<|>للمحترف<
+>À savoir<|>من المفيد معرفته<
+Créer un profil|إنشاء ملف شخصي
+Dans Profil (ou Clients pour le pro), ajoutez le nom, le téléphone et, pour un enfant, son âge.|في الملف الشخصي (أو العملاء للمحترف)، أضف الاسم والهاتف، وللطفل أضف عمره.
+Saisir les mesures|إدخال المقاسات
+Dans Mesures, remplissez les 8 mesures en centimètres et choisissez la silhouette du mannequin. Sans mesures, des mesures standard sont utilisées.|في المقاسات، املأ المقاسات الثمانية بالسنتيمتر واختر شكل جسم المانيكان. بدون مقاسات تُستخدم مقاسات قياسية.
+Choisir un modèle|اختيار نموذج
+Dans Modèles, choisissez une catégorie puis un modèle. Le mannequin 3D porte l'habit à la taille du client : faites-le tourner et changez la couleur du tissu, de la broderie et le teint.|في النماذج، اختر فئة ثم نموذجًا. يرتدي المانيكان ثلاثي الأبعاد القطعة بمقاس العميل: دوّره وغيّر لون القماش والتطريز ولون البشرة.
+Le bouton Essayer sur une photo pose l'habit sur la photo du client. La photo reste sur votre appareil.|يضع زر تجربة على صورة القطعة على صورة العميل. تبقى الصورة على جهازك.
+Commander|تقديم طلب
+Le client touche Envoyer à l'atelier : un message avec sa commande et ses mesures est prêt à envoyer par WhatsApp ou autre.|يلمس العميل إرسال إلى الورشة: تصبح رسالة تحتوي على الطلب والمقاسات جاهزة للإرسال عبر واتساب أو تطبيق آخر.
+Suivre sa commande|متابعة طلب
+Dans Commandes, chaque commande a une étape, une date de livraison, une note et des photos. Le pro envoie l'état au client par un message à coller dans Importer un message.|في الطلبات، لكل طلب مرحلة وتاريخ تسليم وملاحظة وصور. يرسل المحترف الحالة إلى العميل في رسالة تُلصق في استيراد رسالة.
+Recevoir une commande|استلام طلب
+Collez le message du client dans Clients, Importer un message : le client et la commande sont créés.|الصق رسالة العميل في العملاء، استيراد رسالة: يتم إنشاء العميل والطلب.
+Faire avancer une commande|تقديم طلب إلى المرحلة التالية
+Dans Commandes, touchez Passer à l'étape suivante. Modifiez le prix, ajoutez des photos et une date de livraison. Les rappels s'affichent sur l'Accueil.|في الطلبات، المس الانتقال إلى المرحلة التالية. عدّل السعر وأضف صورًا وتاريخ تسليم. تظهر التذكيرات في الرئيسية.
+Devis et reçus|عروض الأسعار والإيصالات
+Touchez Devis / reçu sur une commande, enregistrez les paiements (acompte, mode de paiement), puis imprimez ou enregistrez en PDF.|المس عرض سعر / إيصال في طلب، سجّل المدفوعات (العربون وطريقة الدفع)، ثم اطبع أو احفظ بصيغة PDF.
+Patron et tissu|الباترون والقماش
+Dans Modèles, l'espace pro affiche les calculs, les pièces à couper, le tissu estimé et le patron grandeur nature en pages A4 à assembler. Déduisez le tissu du stock.|في النماذج، تعرض المساحة المهنية الحسابات والقطع المطلوب قصها والقماش المقدَّر والباترون بالحجم الحقيقي في صفحات A4 للتجميع. اخصم القماش من المخزون.
+Stock et tableau de bord|المخزون ولوحة التحكم
+Stock : tissus et fournitures avec alerte de stock bas. Tableau de bord : montants commandés, encaissements, modèles les plus commandés et soldes à encaisser.|المخزون: الأقمشة والمستلزمات مع تنبيه المخزون المنخفض. لوحة التحكم: المبالغ المطلوبة والمدفوعات والنماذج الأكثر طلبًا والأرصدة المستحقة.
+Dans Paramètres, créez une sauvegarde de vos clients et commandes et gardez-la en lieu sûr. Restaurez-la au besoin.|في الإعدادات، أنشئ نسخة احتياطية من عملائك وطلباتك واحتفظ بها في مكان آمن. استعدها عند الحاجة.
+Données privées|بيانات خاصة
+Vos données sont privées et se synchronisent entre vos appareils. Elles ne sont partagées que par les messages que vous envoyez.|بياناتك خاصة وتتزامن بين أجهزتك. لا تُشارك إلا عبر الرسائل التي ترسلها.
+Mannequin 3D indisponible sur cet appareil : dessin de face affiché. Utilisez Essayer sur une photo pour une vue plus réaliste.|المانيكان ثلاثي الأبعاد غير متاح على هذا الجهاز: يظهر الرسم من الأمام. استخدم تجربة على صورة لعرض أكثر واقعية.
+Langue|اللغة
+Dans Paramètres, choisissez Français, English, Español, Português ou العربية.|في الإعدادات، اختر Français أو English أو Español أو Português أو العربية.
+Limites|حدود
+Le mannequin est une représentation : vérifiez les formules et les proportions sur un premier essai en tissu.|المانيكان تمثيل تقريبي: تحقق من الصيغ والنسب في أول تجربة على القماش.
+Nom de l'atelier|اسم الورشة
+Téléphone de l'atelier (avec l'indicatif du pays)|هاتف الورشة (مع رمز الدولة)
+Devise|العملة
+Validité du devis (jours, facultatif)|صلاحية عرض السعر (بالأيام، اختياري)
+Conditions de paiement (facultatif)|شروط الدفع (اختياري)
+Ces réglages restent dans votre espace privé. Le téléphone sert à envoyer les messages directement par WhatsApp.|تبقى هذه الإعدادات في مساحتك الخاصة. يُستخدم الهاتف لإرسال الرسائل مباشرة عبر واتساب.
+Ex. Atelier Diop|مثال: ورشة ديوب
+Les prix sont enregistrés dès que vous quittez le champ.|تُحفظ الأسعار بمجرد مغادرة الحقل.`;
+const DICT={en:EN,es:ES,pt:PT,ar:AR};
+let TK={};
+function T(h){const L=db.lang;if(L==='fr'||!DICT[L])return h;
+if(!TK[L])TK[L]=DICT[L].split('\n').map(l=>l.split('|')).filter(a=>a.length===2).sort((a,b)=>b[0].length-a[0].length);
+return h.split(/(MC[AB]?1:[A-Za-z0-9+/=]+|data:image\/jpeg;base64,[A-Za-z0-9+/=]+)/).map((p,i)=>{if(i%2)return p;const amp=p.indexOf('Mesure &amp; Couture')>-1;p=p.split('Mesure &amp; Couture').join('§B§').split('Mesure & Couture').join('§B§');TK[L].forEach(k=>{p=p.split(k[0]).join(k[1])});return p.split('§B§').join(amp?'Mesure &amp; Couture':'Mesure & Couture')}).join('')}
+let docId=null,docT='d',fl='all';
+function openD(id){docId=id;docT='d';go('doc')}
+function setDep(id,v){const o=db.orders.find(x=>x.id===id);if(!o)return;o.dep=Math.max(0,Math.min(+v||0,o.price));save();wr('orders/'+o.id,o);render()}
+function fchips(){return '<div class="chips">'+[['all','Toutes'],['run','En cours'],['done','Livrées'],['due','À payer']].map(a=>'<button class="chip'+(fl===a[0]?' on':'')+'" onclick="fl=\''+a[0]+'\';render()">'+a[1]+'</button>').join('')+'</div>'}
+function histO(){const l=(P()?db.orders:db.orders.filter(o=>o.cid===db.cid)).slice(0,5);
+return '<h2 style="margin-top:16px">Dernières commandes</h2>'+(l.length?'<div class="card">'+l.map(o=>{const c=db.clients.find(x=>x.id===o.cid);return '<div class="row"><span>'+MOD[o.model].n+' · '+esc(c?c.name:'Client supprimé')+'<div class="m">'+o.date+' · '+STEPS[o.step]+'</div></span><b>'+fmt(o.price)+'</b></div>'}).join('')+'</div>':'<div class="card m">Aucune commande pour le moment.</div>')}
+function d2f(u,n){const a=atob(u.split(',')[1]),b=new Uint8Array(a.length);for(let i=0;i<a.length;i++)b[i]=a.charCodeAt(i);return new File([b],n,{type:'image/jpeg'})}
+function shrink(f,cb){const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,640/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(im.width*k));c.height=Math.max(1,Math.round(im.height*k));c.getContext('2d').drawImage(im,0,0,c.width,c.height);let d='';for(const q of [.6,.45,.3]){d=c.toDataURL('image/jpeg',q);if(d.length<80000)break}cb(d.length<80000?d:null)};im.onerror=()=>cb(null);im.src=r.result};r.onerror=()=>cb(null);r.readAsDataURL(f)}
+function pickP(id,k){const f=$('f_'+id+'_'+k).files[0];if(!f)return;
+shrink(f,u=>{const o=db.orders.find(x=>x.id===id);if(!u||!o){err='Photo illisible. Essayez une autre image.';render();return}
+const old=o[k];o[k]=u;let ok=true;try{localStorage.setItem('mc',JSON.stringify(db))}catch(e){ok=false}
+if(!ok){if(old)o[k]=old;else delete o[k];err='Mémoire de l\'appareil pleine : retirez des photos anciennes.';render();return}
+save();wr('orders/'+id,o);err='';render()})}
+function delP(id,k){const o=db.orders.find(x=>x.id===id);if(!o)return;delete o[k];save();wr('orders/'+id,o);render()}
+function shareP(id){const o=db.orders.find(x=>x.id===id);if(!o)return;const fs=[];if(o.pt)fs.push(d2f(o.pt,'tissu.jpg'));if(o.pm)fs.push(d2f(o.pm,'modele.jpg'));
+if(navigator.canShare&&navigator.canShare({files:fs})){navigator.share({files:fs,text:MOD[o.model].n}).catch(()=>{})}else{err='Le partage de photos n\'est pas disponible ici : appuyez longuement sur une photo pour l\'enregistrer.';render()}}
+function phHtml(o){return '<div class="g2" style="margin-top:8px">'+[['pt','Photo du tissu'],['pm','Photo du modèle']].map(a=>'<div>'+(o[a[0]]?'<img src="'+o[a[0]]+'" alt="'+a[1]+'" style="width:100%;border-radius:8px;display:block">':'')+'<label class="m" style="margin-top:4px;display:block;border:1px dashed var(--bd);border-radius:8px;padding:8px;text-align:center;cursor:pointer">'+(o[a[0]]?'Changer : ':'Ajouter : ')+a[1]+'<input id="f_'+o.id+'_'+a[0]+'" type="file" accept="image/*" style="display:none" onchange="pickP('+o.id+',\''+a[0]+'\')"></label>'+(o[a[0]]?'<button style="width:100%;margin-top:4px;min-height:36px" onclick="delP('+o.id+',\''+a[0]+'\')">Retirer</button>':'')+'</div>').join('')+'</div>'+((o.pt||o.pm)?'<button style="margin-top:8px;width:100%" onclick="shareP('+o.id+')">Envoyer les photos</button>':'')}
+const PM=['Espèces','Mobile money','Virement','Carte','Autre'];
+const paid=o=>o.pay?o.pay.reduce((t,x)=>t+x.a,0):(o.dep||0);
+function payRows(o){const l=o.pay||(o.dep>0?[{d:o.date,a:o.dep,m:'Acompte'}]:[]);return l.map(x=>'<div class="row"><span class="m">'+x.d+' · '+esc(x.m)+'</span><span>'+fmt(x.a)+'</span></div>').join('')}
+function payForm(o){const rest=Math.max(0,o.price-paid(o));
+return '<div class="card np"><h2>Paiements</h2><div class="g2"><div><label for="pa">Montant ('+esc(db.cur||'FCFA')+')</label><input id="pa" type="number" inputmode="numeric" min="1" value="'+(rest||'')+'"></div><div><label for="pm2">Mode</label><select id="pm2">'+PM.map(m=>'<option>'+m+'</option>').join('')+'</select></div></div><button class="p" style="width:100%;margin-top:8px" onclick="addPay('+o.id+')">Enregistrer le paiement</button>'+(o.pay&&o.pay.length?'<div style="margin-top:8px">'+o.pay.map((x,i)=>'<div class="row" style="align-items:center"><span class="m">'+x.d+' · '+esc(x.m)+' · '+fmt(x.a)+'</span><button style="min-height:36px" onclick="delPay('+o.id+','+i+')">Suppr.</button></div>').join('')+'</div>':'')+'</div>'}
+function addPay(id){const o=db.orders.find(x=>x.id===id);if(!o)return;const a=Math.round(+$('pa').value);
+if(!(a>0)){err='Entrez un montant supérieur à 0.';render();return}
+if(a>o.price-paid(o)){err='Le montant dépasse le reste à payer.';render();return}
+if(!o.pay){o.pay=o.dep>0?[{d:o.date,a:o.dep,m:'Acompte'}]:[];delete o.dep}
+o.pay.push({d:new Date().toLocaleDateString('fr-FR'),a:a,m:PM[$('pm2').selectedIndex]||'Autre'});
+save();wr('orders/'+id,o);err='';msg='Paiement enregistré.';render()}
+function delPay(id,i){const o=db.orders.find(x=>x.id===id);if(!o||!o.pay)return;o.pay.splice(i,1);save();wr('orders/'+id,o);render()}
+function patPages(m,k){const M=MOD[k],pcs=M.p(m),d=M.d(m),SX=18,SY=26.7,info=[],body=[];
+pcs.forEach((p,pi)=>{const w=p[1],h=p[2],poly=['Devant','Dos','Panneau'].indexOf(p[0])>-1;
+let pts=[[0,0],[w,0],[w,h],[0,h]];
+if(poly){const sx=w/Math.max(d[0],d[1],d[2]);pts=[[0,0],[d[0]*sx,0],[d[1]*sx,.35*h],[d[2]*sx,h],[0,h]]}
+const cols=Math.max(1,Math.ceil((w-1)/SX)),rows=Math.max(1,Math.ceil((h-1)/SY));info.push([p,cols*rows]);
+for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){const ox=1-c*SX,oy=1-r*SY,id='cp'+pi+'_'+r+'_'+c;
+body.push('<svg class="pg" viewBox="0 0 21 29.7"><defs><clipPath id="'+id+'"><rect x="1" y="1" width="19" height="27.7"/></clipPath></defs><rect x="1" y="1" width="19" height="27.7" fill="none" stroke="#888" stroke-width=".04" stroke-dasharray=".4 .3"/><g clip-path="url(#'+id+')"><polygon points="'+pts.map(q=>R(q[0]+ox)+','+R(q[1]+oy)).join(' ')+'" fill="none" stroke="#000" stroke-width=".07"/><text x="'+R(w/2+ox)+'" y="'+R(h/2+oy)+'" text-anchor="middle">'+p[0]+' ×'+p[3]+' · '+R(w)+' × '+R(h)+' cm</text><text x="'+R(w*.12+ox)+'" y="'+R(h*.3+oy)+'">↕ droit-fil</text></g><text x="10.5" y="29.1" text-anchor="middle">'+p[0]+' ×'+p[3]+' · Page '+(r*cols+c+1)+'/'+(rows*cols)+' · ligne '+(r+1)+' · colonne '+(c+1)+'</text></svg>')}});
+const tot=info.reduce((t,a)=>t+a[1],0)+1;
+let cv='<svg class="pg" viewBox="0 0 21 29.7"><text x="1.5" y="2.5" style="font-size:.9px;font-weight:700">Patron grandeur nature · '+M.n+'</text><text x="1.5" y="4">Imprimez à 100 %, sans ajuster à la page.</text><text x="1.5" y="4.8">Assemblez les pages ligne par ligne, bord à bord.</text><text x="1.5" y="5.6">Les dimensions incluent des marges de couture approximatives.</text><rect x="1.5" y="7.5" width="10" height="10" fill="none" stroke="#000" stroke-width=".07"/><text x="1.5" y="18.4">Vérifiez l\'échelle : ce carré doit mesurer 10 cm</text><text x="1.5" y="20.4" style="font-weight:700">Pièces à couper</text>';
+info.forEach((a,i)=>{cv+='<text x="1.5" y="'+(21.3+i*.8)+'">'+a[0][0]+' ×'+a[0][3]+' · '+R(a[0][1])+' × '+R(a[0][2])+' cm · '+a[1]+' page(s)</text>'});
+cv+='<text x="1.5" y="'+(21.3+info.length*.8+.4)+'" style="font-weight:700">Total : '+tot+' pages</text></svg>';
+return [cv].concat(body)}
+let catSel=null;
+function curCat(){return catSel&&MOD[mod]&&MOD[mod].cat===catSel?catSel:MOD[mod].cat}
+function pickCat(c){catSel=c;mod=Object.keys(MOD).find(k=>MOD[k].cat===c);render()}
+function catChips(){return '<div class="chips">'+CATS.filter(c=>c!==RT).map(c=>'<button class="chip'+(c===curCat()?' on':'')+'" onclick="pickCat(\''+c+'\')">'+c+'</button>').join('')+'</div>'}
+let dp=30;
+const pays=o=>o.pay||(o.dep>0?[{d:o.date,a:o.dep,m:'Acompte'}]:[]);
+const pd=t=>{const a=String(t).split('/');return new Date(+a[2],+a[1]-1,+a[0]).getTime()||0};
+const td=()=>{const d=new Date();return new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime()};
+const dl=o=>o.due?Math.round((new Date(o.due+'T00:00:00').getTime()-td())/864e5):null;
+const dtxt=n=>n<0?'En retard de '+(-n)+' jour(s)':n===0?'Aujourd\'hui':'Dans '+n+' jour(s)';
+function dueHtml(o){const n=dl(o),late=n!==null&&n<0&&o.step<4;
+return '<div style="margin-top:8px"><label for="dd'+o.id+'">Date de livraison</label><input id="dd'+o.id+'" type="date" value="'+(o.due||'')+'" onchange="setDue('+o.id+',this.value)">'+(n!==null&&o.step<4?'<div class="'+(late?'er':'m')+'">'+dtxt(n)+'</div>':'')+'</div>'}
+function setDue(id,v){const o=db.orders.find(x=>x.id===id);if(!o)return;if(/^\d{4}-\d{2}-\d{2}$/.test(v))o.due=v;else delete o.due;save();wr('orders/'+id,o);render()}
+function rems(){return (P()?db.orders:db.orders.filter(o=>o.cid===db.cid)).filter(o=>o.step<4&&o.due&&dl(o)<=db.rd).sort((a,b)=>dl(a)-dl(b))}
+function remHtml(){const l=rems();if(!l.length)return '';return '<div class="card" style="border-left:4px solid var(--tape)"><h2>Rappels de livraison</h2>'+l.map(o=>{const c=db.clients.find(x=>x.id===o.cid),n=dl(o);return '<div class="row"><span>'+MOD[o.model].n+' · '+esc(c?c.name:'Client supprimé')+'</span><b'+(n<0?' class="er"':'')+'>'+dtxt(n)+'</b></div>'}).join('')+'</div>'}
+const CHK=['poitrine','taille','bassin','epaules','cuisse','manche','entrejambe','hauteur'];
+const CH=[[2,53,51,55,25,32,36,40,92],[4,57,53,60,28,35,41,51,104],[6,61,55,66,30,38,46,58,116],[8,66,58,72,33,42,51,64,128],[10,72,61,79,35,46,56,71,140],[12,78,64,86,38,50,60,77,152],[14,84,67,92,40,54,64,82,164]];
+const isKid=c=>!!c&&+c.age>=1&&+c.age<16;
+function defM(c){if(!isKid(c))return DEF;const a=Math.min(14,Math.max(2,+c.age));let i=0;while(i<CH.length-2&&a>CH[i+1][0])i++;const A=CH[i],B=CH[i+1],t=(a-A[0])/(B[0]-A[0]),o={};CHK.forEach((k,j)=>{o[k]=Math.round(A[j+1]+(B[j+1]-A[j+1])*t)});return o}
+let bk='',bkPh=false;
+function bkBox(){return '<div class="card"><h2>Sauvegarde</h2><p class="m" style="margin:0 0 6px">La sauvegarde contient les données de vos clients : gardez-la privée.</p><label style="display:flex;gap:8px;align-items:center;margin:0 0 8px"><input type="checkbox" style="width:auto;min-height:0" '+(bkPh?'checked ':'')+'onchange="bkPh=this.checked">Inclure les photos (plus volumineux)</label><button class="p" style="width:100%" onclick="mkBk()">Créer la sauvegarde</button>'+(bk?'<textarea id="bkt" readonly rows="4" style="'+TA+';margin-top:8px" aria-label="Sauvegarde">'+bk+'</textarea><div class="g2" style="margin-top:8px"><button onclick="bkCopy()">Copier</button><button onclick="bkSend()">Envoyer</button></div>':'')+'<h2 style="margin-top:14px">Restaurer</h2><p class="m" style="margin:0 0 6px">Collez une sauvegarde : les clients et commandes manquants sont ajoutés, sans effacer l\'existant.</p><textarea id="rb" rows="3" style="'+TA+'" aria-label="Coller une sauvegarde"></textarea><button style="margin-top:8px;width:100%" onclick="rsBk()">Restaurer</button></div>'}
+function mkBk(){const strip=o=>{if(bkPh)return o;const c=Object.assign({},o);delete c.pt;delete c.pm;return c};
+bk='MCB1:'+btoa(unescape(encodeURIComponent(JSON.stringify({v:1,d:new Date().toISOString().slice(0,10),clients:db.clients,orders:db.orders.map(strip),stock:db.stock}))));
+msg='Sauvegarde créée ('+Math.round(bk.length/1024)+' Ko).';err='';render()}
+function bkCopy(){const t=$('bkt');if(!t)return;t.select();let ok=false;try{ok=document.execCommand('copy')}catch(e){}
+if(ok){msg='Sauvegarde copiée.';err=''}else{err='Copie impossible ici : touchez le texte, sélectionnez-le puis copiez-le.'}render()}
+function bkSend(){if(!bk)return;try{if(navigator.canShare){const f=new File([bk],'sauvegarde-mesure-couture.txt',{type:'text/plain'});if(navigator.canShare({files:[f]})){navigator.share({files:[f]}).catch(()=>{});return}}
+if(navigator.share){navigator.share({text:bk}).catch(()=>{});return}}catch(e){}bkCopy()}
+function rsBk(){const t=($('rb').value||'').match(/MCB1:([A-Za-z0-9+/=]+)/);
+if(!t){err='Aucune sauvegarde trouvée dans ce texte.';render();return}
+let o;try{o=JSON.parse(decodeURIComponent(escape(atob(t[1]))))}catch(e){err='Sauvegarde illisible ou incomplète.';render();return}
+if(!o||!Array.isArray(o.clients)||!Array.isArray(o.orders)){err='Sauvegarde invalide.';render();return}
+let nc=0,no=0,ns=0;const ids=new Set(db.clients.map(c=>c.id)),oi=new Set(db.orders.map(x=>x.id));
+o.clients.forEach(c=>{if(!c||!Number.isFinite(+c.id)||ids.has(+c.id))return;const n={id:+c.id,name:String(c.name||'').slice(0,60)||'Client'};if(c.tel)n.tel=String(c.tel).slice(0,30);if(+c.age>=1&&+c.age<16)n.age=+c.age;if(c.sx==='f'||c.sx==='h')n.sx=c.sx;
+if(c.m&&typeof c.m==='object'){const mm=Object.assign({},c.m);if(!(+mm.hauteur>0)&&+mm.entrejambe>0)mm.hauteur=Math.round(mm.entrejambe/.46);const m={};let ok=true;for(const k of MS){const v=+mm[k[0]];if(v>0&&v<300)m[k[0]]=v;else ok=false}if(ok)n.m=m}
+db.clients.push(n);ids.add(n.id);wr('clients/'+n.id,n);nc++});
+o.orders.forEach(x=>{if(!x||!Number.isFinite(+x.id)||oi.has(+x.id)||!MOD[x.model])return;
+const n={id:+x.id,cid:+x.cid,model:x.model,price:Math.max(0,+x.price||0),step:Math.min(4,Math.max(0,+x.step||0)),date:String(x.date||'').slice(0,10)};
+if(Array.isArray(x.pay))n.pay=x.pay.filter(q=>q&&+q.a>0).map(q=>({d:String(q.d||'').slice(0,10),a:Math.round(+q.a),m:String(q.m||'').slice(0,20)}));else if(+x.dep>0)n.dep=+x.dep;
+if(/^\d{4}-\d{2}-\d{2}$/.test(x.due||''))n.due=x.due;if(+x.ref)n.ref=+x.ref;
+['pt','pm'].forEach(k=>{if(typeof x[k]==='string'&&/^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(x[k])&&x[k].length<80000)n[k]=x[k]});
+db.orders.push(n);oi.add(n.id);wr('orders/'+n.id,n);no++});
+if(Array.isArray(o.stock)){const si=new Set(db.stock.map(x=>x.id));o.stock.forEach(x=>{if(!x||!Number.isFinite(+x.id)||si.has(+x.id))return;const n={id:+x.id,n:String(x.n||'').slice(0,60),t:x.t==='f'?'f':'t',u:SU.indexOf(x.u)>-1?x.u:'m',q:Math.max(0,+x.q||0),mn:Math.max(0,+x.mn||0)};if(+x.pr>0)n.pr=Math.round(+x.pr);db.stock.push(n);si.add(n.id);wr('stock/'+n.id,n);ns++})}
+db.orders.sort((a,b)=>b.id-a.id);db.clients.sort((a,b)=>a.id-b.id);
+save();err='';msg='Restauration terminée : '+nc+' client(s) et '+no+' commande(s) ajouté(s).'+(ns?' '+ns+' article(s) de stock ajouté(s).':'');render()}
+function noteHtml(o){return '<div style="margin-top:8px"><label for="nt'+o.id+'">Note / consignes</label><input id="nt'+o.id+'" maxlength="200" placeholder="Ex. raccourcir de 3 cm" value="'+esc(o.note||'')+'" onchange="setNote('+o.id+',this.value)">'+(P()?'<label for="pr'+o.id+'" style="margin-top:8px">Prix de cette commande ('+esc(db.cur||'FCFA')+')</label><input id="pr'+o.id+'" type="number" inputmode="numeric" min="0" value="'+o.price+'" onchange="setPrice('+o.id+',this.value)">':'')+'</div>'}
+function setNote(id,v){const o=db.orders.find(x=>x.id===id);if(!o)return;v=v.trim().slice(0,200);if(v)o.note=v;else delete o.note;save();wr('orders/'+id,o);render()}
+function setPrice(id,v){const o=db.orders.find(x=>x.id===id);if(!o)return;o.price=Math.max(0,Math.round(+v)||0);save();wr('orders/'+id,o);render()}
+let sf='all';
+const SU=['m','pièce','bobine','paquet'];
+const low=it=>it.mn>0&&it.q<=it.mn;
+function stkAdd(){const n=$('sn').value.trim(),q=+$('sq').value;
+if(!n){err='Entrez un nom pour ajouter un article.';render();return}
+if(!(q>=0)){err='Entrez une quantité valide.';render();return}
+let nid=Date.now();while(db.stock.some(x=>x.id===nid))nid++;const it={id:nid,n:n.slice(0,60),t:$('st2').selectedIndex?'f':'t',u:SU[$('su').selectedIndex]||'m',q:Math.round(q*100)/100,mn:Math.max(0,+$('sm').value||0)};const pr=+$('sp').value;if(pr>0)it.pr=Math.round(pr);
+db.stock.push(it);save();wr('stock/'+it.id,it);err='';msg='Article ajouté.';render()}
+function stkQ(id,v){const it=db.stock.find(x=>x.id===id);if(!it)return;it.q=Math.max(0,Math.round(+v*100)/100||0);save();wr('stock/'+id,it);render()}
+function stkAdj(id,d){const it=db.stock.find(x=>x.id===id);if(it)stkQ(id,it.q+d)}
+function stkDel(id){db.stock=db.stock.filter(x=>x.id!==id);save();rm('stock/'+id);render()}
+function stkRow(it){const lw=low(it);return '<div class="card"'+(lw?' style="border-left:4px solid var(--er)"':'')+'><div class="row" style="border:0;padding:0"><div><b>'+esc(it.n)+'</b><div class="m">'+(it.t==='t'?'Tissu':'Fourniture')+(it.pr?' · '+fmt(it.pr)+' / '+esc(it.u):'')+'</div></div>'+(lw?'<span class="er">Stock bas</span>':'')+'</div><div style="display:flex;gap:8px;align-items:center;margin-top:8px"><button style="min-width:44px" onclick="stkAdj('+it.id+',-1)" aria-label="Retirer 1">−</button><input type="number" inputmode="decimal" step="any" min="0" value="'+it.q+'" onchange="stkQ('+it.id+',this.value)" aria-label="Quantité"><span class="m" style="white-space:nowrap">'+esc(it.u)+'</span><button style="min-width:44px" onclick="stkAdj('+it.id+',1)" aria-label="Ajouter 1">+</button><button style="min-height:36px" onclick="stkDel('+it.id+')">Suppr.</button></div></div>'}
+function stkLow(){if(!P())return '';const l=db.stock.filter(low);if(!l.length)return '';return '<div class="card" style="border-left:4px solid var(--er)"><h2>Stock bas</h2>'+l.slice(0,5).map(it=>'<div class="row"><span>'+esc(it.n)+'</span><b class="er">'+it.q+' '+esc(it.u)+'</b></div>').join('')+'</div>'}
+function stkUseBox(need){const f=db.stock.filter(x=>x.t==='t'&&x.u==='m');if(!f.length)return '';return '<div class="card np"><h2>Déduire du stock</h2><label for="df">Tissu utilisé</label><select id="df">'+f.map(x=>'<option value="'+x.id+'">'+esc(x.n)+' ('+x.q+' m)</option>').join('')+'</select><button class="p" style="margin-top:8px;width:100%" onclick="stkUse('+R(need)+')">Déduire '+need.toFixed(2)+' m du stock</button></div>'}
+function stkUse(n){const it=db.stock.find(x=>x.id===+$('df').value);if(!it)return;if(n>it.q){err='Stock insuffisant ('+it.q+' m disponibles).';render();return}msg='Stock mis à jour.';stkQ(it.id,it.q-n)}
+function skinChips(){return '<div class="m np">Teint du mannequin</div><div class="chips np">'+['#f1c9a5','#d9a37a','#b98a6a','#8d5a3b','#6b4226','#4a2c17'].map(c=>'<button aria-label="Teint '+c+'" style="width:44px;background:'+c+';border:3px solid '+((db.sk||'#b98a6a')===c?'var(--tape)':'var(--bd)')+'" onclick="db.sk=\''+c+'\';save();render()"></button>').join('')+'</div>'}
+function setSx(i){const c=C();if(!c)return;const v=['n','f','h'][i];if(v==='n')delete c.sx;else c.sx=v;save();wr('clients/'+c.id,c);render()}
+function trimChips(){return '<div class="m np">Couleur de broderie et finitions</div><div class="chips np"><button aria-label="Auto" class="chip'+((db.tc||'auto')==='auto'?' on':'')+'" style="min-width:56px" onclick="db.tc=\'auto\';save();render()">Auto</button>'+['#111111','#f5f0e6','#c9a227','#b8b8b8','#c0392b','#1f6f4a','#27407a'].map(c=>'<button aria-label="Broderie '+c+'" style="width:44px;background:'+c+';border:3px solid '+(db.tc===c?'var(--tape)':'var(--bd)')+'" onclick="db.tc=\''+c+'\';save();render()"></button>').join('')+'</div>'}
+if(typeof THREE==='undefined')window.THREE={BufferGeometry:class{setAttribute(){}setIndex(){}computeVertexNormals(){}},Float32BufferAttribute:class{},SphereGeometry:class{constructor(){this.type='SphereGeometry'}},BoxGeometry:class{constructor(){this.type='BoxGeometry'}}};
+let phImg=null,phPts=[],phOp=.85,phMul=true,phDy=0,phSw=100,phOut='',phCx=null,phPat='uni',phM2='',phDx=0,phKb=null,phYS=null,phYB=null;
+function sil(m,k,age,sx){const out=[];build3(m,k,age,sx).forEach(t=>{if(!(t.gm===1||t.gm===2||t.gm===3))return;const g=t.g,px=(t.p||[0,0])[0],py=(t.p||[0,0])[1],rz=t.rz||0,cs=Math.cos(rz),sn=Math.sin(rz),tf=(x,y)=>[px+x*cs-y*sn,py+x*sn+y*cs];let pts=null;
+if(g.sec){const L=[],Rr=[];g.sec.forEach(q=>{const r=Math.max(.3,q[1]);L.push(tf(g.cx-r,q[0]));Rr.push(tf(g.cx+r,q[0]))});pts=L.concat(Rr.reverse())}
+else if(g.type==='BoxGeometry'&&t.s){const a=t.s[0]/2,b=t.s[1]/2;pts=[tf(-a,-b),tf(a,-b),tf(a,b),tf(-a,b)]}
+else if(g.type==='SphereGeometry'&&t.s){pts=[];for(let i=0;i<10;i++){const a=i/10*Math.PI*2;pts.push([px+Math.cos(a)*t.s[0],py+Math.sin(a)*t.s[1]])}}
+if(pts)out.push({pts:pts,gm:t.gm})});return out}
+function phLoad(){const f=$('phf').files[0];if(!f)return;const r=new FileReader();
+r.onload=()=>{const im=new Image();im.onload=()=>{phImg=im;phPts=[];phCx=null;phSw=100;phDy=0;phKb=null;phDx=0;phOut='';err='';render()};im.onerror=()=>{err='Photo illisible. Essayez une autre image.';render()};im.src=r.result};
+r.onerror=()=>{err='Photo illisible. Essayez une autre image.';render()};r.readAsDataURL(f)}
+const mix=(h,w,t)=>{const a=parseInt(h.slice(1),16),b=parseInt(w.slice(1),16),f=z=>Math.round((a>>z&255)*(1-t)+(b>>z&255)*t);return '#'+((1<<24)+(f(16)<<16)+(f(8)<<8)+f(0)).toString(16).slice(1)};
+function phFill(x,sc){if(phPat==='uni')return db.fab;const c=document.createElement('canvas'),t=c.getContext('2d'),P=phPat==='wax'?60:phPat==='car'?28:phPat==='poi'?20:16,lt=mix(db.fab,'#ffffff',.38),ac=(db.tc&&db.tc!=='auto')?db.tc:shade(db.fab);c.width=c.height=P;
+t.fillStyle=db.fab;t.fillRect(0,0,P,P);t.fillStyle=lt;t.strokeStyle=lt;
+if(phPat==='ray')t.fillRect(0,0,P/4,P);
+else if(phPat==='poi'){t.beginPath();t.arc(P/2,P/2,P/5,0,7);t.fill()}
+else if(phPat==='car'){t.lineWidth=2;t.beginPath();t.moveTo(0,0);t.lineTo(P,0);t.moveTo(0,0);t.lineTo(0,P);t.stroke()}
+else{t.strokeStyle=ac;t.lineWidth=3;[P*.42,P*.28,P*.14].forEach(r=>{t.beginPath();t.arc(P/2,P/2,r,0,7);t.stroke()});t.beginPath();t.arc(0,0,P*.2,0,7);t.arc(P,P,P*.2,0,7);t.fill()}
+const p=x.createPattern(c,'repeat');try{p.setTransform(new DOMMatrix().scale(Math.max(.4,sc/5.2)))}catch(e){}return p}
+function phCal(){const h=phPts[0],f=phPts[1],a=phPts[2],b=phPts[3],m=Ms(),cl=C()||{},H=m.hauteur||m.entrejambe/.46,sc=(f[1]-h[1])/H,hf=.13+(16-(isKid(cl)?+cl.age:16))*.005,sy=H*(1-(hf+.05*(1-hf)/.87)),w=Math.abs(b[0]-a[0]);
+if(!(sc>0)||!(w>0))return;phSw=Math.max(70,Math.min(140,Math.round(w/(m.epaules*sc)*100)));phCx=(a[0]+b[0])/2;phDy=Math.max(-25,Math.min(25,Math.round(((f[1]-(a[1]+b[1])/2)/sc-sy)*2)/2));phYS=(f[1]-(a[1]+b[1])/2)/sc;phKb=null}
+function phHip(){const h=phPts[0],f=phPts[1],a=phPts[4],b=phPts[5],m=Ms(),H=m.hauteur||m.entrejambe/.46,sc=(f[1]-h[1])/H,w=Math.abs(b[0]-a[0]),mw=2*m.bassin/5.4*sc*phSw/100;if(!(sc>0)||!(w>0)||!(mw>0))return;phKb=Math.max(.6,Math.min(1.6,w/mw));phYB=(f[1]-(a[1]+b[1])/2)/sc}
+function phDraw(){const c=$('phc');if(!c||!phImg)return;const cw=720,ch=Math.min(1500,Math.round(cw*phImg.height/phImg.width));c.width=cw;c.height=ch;const x=c.getContext('2d');x.drawImage(phImg,0,0,cw,ch);
+const dot=p=>{x.fillStyle='#f0c030';x.strokeStyle='#000';x.beginPath();x.arc(p[0],p[1],8,0,7);x.fill();x.stroke()};
+if(phPts.length<2){phPts.forEach(dot);return}
+const hy=phPts[0][1],fy=phPts[1][1],cx=phCx!=null?phCx:(phPts[0][0]+phPts[1][0])/2,m=Ms(),cl=C()||{},H=m.hauteur||m.entrejambe/.46,sc=(fy-hy)/H;
+if(!(sc>0)){phPts=[];err='Touchez d\'abord le sommet de la tête, puis les pieds.';render();return}
+const tm=(db.tc&&db.tc!=='auto')?db.tc:shade(db.fab),fs=phFill(x,sc),mode=phMul?'multiply':'source-over';
+const wf=yc=>phKb==null||phYS==null||phYB==null?1:1+(phKb-1)*Math.max(0,Math.min(1,(phYS-yc)/((phYS-phYB)||1)));
+const path=o=>{x.beginPath();o.pts.forEach((q,i)=>{const X=cx+phDx*sc+q[0]*phSw/100*sc*wf(q[1]),Y=fy-(q[1]+phDy)*sc;if(i)x.lineTo(X,Y);else x.moveTo(X,Y)});x.closePath()};
+const paint=o=>{x.globalCompositeOperation=mode;x.globalAlpha=o.gm===1?phOp:Math.min(1,phOp+.1);x.fillStyle=o.gm===1?fs:o.gm===2?tm:'#e8e2d4';path(o);x.fill();
+if(o.gm===1){x.globalCompositeOperation='source-over';const xs=o.pts.map(q=>cx+phDx*sc+q[0]*phSw/100*sc*wf(q[1])),x0=Math.min.apply(null,xs),x1=Math.max.apply(null,xs),g=x.createLinearGradient(x0,0,x1,0);g.addColorStop(0,'rgba(0,0,0,.28)');g.addColorStop(.22,'rgba(0,0,0,0)');g.addColorStop(.78,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,.28)');x.globalAlpha=phOp*.7;x.fillStyle=g;path(o);x.fill();x.strokeStyle='rgba(0,0,0,.35)';x.lineWidth=1.4;x.stroke()}};
+const ms2=[phM2&&MOD[phM2]&&!MOD[phM2].ret?phM2:null,mod].filter(Boolean),lw=k=>{const f=MOD[k].g.f;return f==='pants'||f==='skirt'?0:1};
+ms2.sort((p,q)=>lw(p)-lw(q));const under=ms2.length===2&&lw(ms2[0])===0&&lw(ms2[1])===1;
+ms2.forEach((k,i)=>sil(m,k,cl.age,cl.sx).filter(o=>!(under&&i===0&&o.gm!==1)).forEach(paint));
+x.globalAlpha=1;x.globalCompositeOperation='source-over';
+if(phPts.length===3||phPts.length===5)dot(phPts[phPts.length-1])}
+function setupPh(){const c=$('phc');if(!c)return;c.onpointerup=e=>{if(phPts.length>=6)return;const b=c.getBoundingClientRect();phPts.push([(e.clientX-b.left)*c.width/b.width,(e.clientY-b.top)*c.height/b.height]);const n=phPts.length;if(n===4)phCal();if(n===6)phHip();if(n===2||n===4||n===6)render();else{phDraw();const s=document.querySelector('#v p.m b');if(s)s.textContent=T(n===1?'Touchez les pieds, au sol.':n===3?'Touchez maintenant l\'autre épaule.':'Touchez maintenant l\'autre hanche.')}};phDraw()}
+function phSave(){const c=$('phc');if(!c)return;phOut=c.toDataURL('image/jpeg',.9);render()}
+function phShare(){const c=$('phc');if(!c)return;c.toBlob(b=>{const f=new File([b],'essayage.jpg',{type:'image/jpeg'});if(navigator.canShare&&navigator.canShare({files:[f]}))navigator.share({files:[f]}).catch(()=>{});else{err='Partage impossible ici : appuyez longuement sur l\'image pour l\'enregistrer.';render()}},'image/jpeg',.9)}
+function shade(h){const n=parseInt(String(h).slice(1),16),r=Math.round((n>>16&255)*.7),g=Math.round((n>>8&255)*.7),b=Math.round((n&255)*.7);return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1)}
+const AT=()=>(db.ateliers||[]).find(a=>a.id===db.atl)||null;
+const priceOf=k=>P()?db.prices[k]:((AT()&&AT().pr&&AT().pr[k]!=null)?AT().pr[k]:db.prices[k]);
+const curOf=()=>(!P()&&AT()&&AT().cur)||db.cur||'FCFA';
+function atSel(){if(P())return '';const l=db.ateliers||[];if(!l.length)return '<div class="card np"><p class="m" style="margin:0 0 6px">Aucun atelier enregistré. Ajoutez celui de votre couturier dans Paramètres.</p><button style="width:100%" onclick="go(\'set\')">Ajouter un atelier</button></div>';
+return '<div class="card np"><label for="as">Atelier</label><select id="as" onchange="setAtl(+this.value)">'+l.map(a=>'<option value="'+a.id+'"'+(a.id===db.atl?' selected':'')+'>'+esc(a.n)+'</option>').join('')+'</select></div>'}
+function setAtl(id){db.atl=id;save();render()}
+function delAtl(id){db.ateliers=(db.ateliers||[]).filter(a=>a.id!==id);if(db.atl===id)db.atl=db.ateliers[0]?db.ateliers[0].id:null;save();render()}
+function atBox(){if(P())return '<div class="card"><h2>Inviter des clients</h2><p class="m" style="margin:0 0 6px">Créez un code avec le nom, le téléphone et les prix de votre atelier. Vos clients l\'ajoutent pour vous envoyer leurs commandes.</p><button class="p" style="width:100%" onclick="mkAtl()">Créer le code atelier</button></div>'+shareBox();
+const l=db.ateliers||[];return '<div class="card"><h2>Mes ateliers</h2>'+(l.length?l.map(a=>'<div class="row" style="align-items:center"><span><b>'+esc(a.n)+'</b><div class="m">'+(a.t?'+'+esc(a.t):'')+'</div></span><span style="display:flex;gap:6px"><button class="chip'+(a.id===db.atl?' p':'')+'" onclick="setAtl('+a.id+')">'+(a.id===db.atl?'Actif':'Choisir')+'</button><button onclick="delAtl('+a.id+')">Suppr.</button></span></div>').join(''):'<p class="m">Aucun atelier enregistré.</p>')+'<label for="ac" style="margin-top:8px">Code de l\'atelier</label><textarea id="ac" rows="2" style="'+TA+'" aria-label="Code de l\'atelier"></textarea><button class="p" style="margin-top:8px;width:100%" onclick="impAtlBtn()">Ajouter cet atelier</button></div>'}
+function mkAtl(){if(!db.at||!db.atel){err='Renseignez d\'abord le nom et le téléphone de l\'atelier ci-dessus.';render();return}
+const code='MCA1:'+btoa(unescape(encodeURIComponent(JSON.stringify({n:db.at,t:db.atel,cur:db.cur||'FCFA',pr:db.prices})))),base=/^https?:$/.test(location.protocol)&&!/claude|anthropic/i.test(location.hostname)?location.href.split('#')[0]:'';
+shr={title:'Code de l\'atelier',name:db.at,wa:'',txt:'Bonjour ! Voici l\'application de '+db.at+(base?'. Ouvrez ce lien : l\'atelier s\'ajoute tout seul. '+base+'#a='+code+' ':'. Ouvrez l\'application, puis Paramètres, Code de l\'atelier, et collez ce message. ')+code};render()}
+function impAtl(raw){const t=String(raw||'').match(/MCA1:([A-Za-z0-9+/=]+)/);if(!t)return false;let o;try{o=JSON.parse(decodeURIComponent(escape(atob(t[1]))))}catch(e){return false}
+if(!o||typeof o.n!=='string'||!o.n.trim())return false;
+const a={id:Date.now(),n:o.n.trim().slice(0,60),t:String(o.t||'').replace(/[^0-9]/g,'').slice(0,20),cur:String(o.cur||'FCFA').slice(0,8),pr:{}};
+if(o.pr&&typeof o.pr==='object')Object.keys(o.pr).forEach(k=>{const v=+o.pr[k];if(MOD[k]&&v>=0&&v<1e8)a.pr[k]=Math.round(v)});
+db.ateliers=db.ateliers||[];const ex=db.ateliers.find(x=>x.n===a.n&&x.t===a.t);if(ex){ex.cur=a.cur;ex.pr=a.pr;db.atl=ex.id}else{db.ateliers.push(a);db.atl=a.id}save();return a.n}
+function impAtlBtn(){const r=impAtl($('ac').value);if(!r){err='Code de l\'atelier invalide ou incomplet.';render();return}err='';msg='Atelier « '+r+' » ajouté.';render()}
+(function(){const m=(location.hash||'').match(/#a=(MCA1:[A-Za-z0-9+/=]+)/);if(!m)return;const r=impAtl(m[1]);try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}if(r){sp='c';tab='home';msg='Atelier « '+r+' » ajouté. Créez votre profil pour commander.'}})();
+function sendO(id){const o=db.orders.find(x=>x.id===id),c=o&&db.clients.find(x=>x.id===o.cid);
+if(!c||(!c.m&&!MOD[o.model].ret)){err='Enregistrez d\'abord les mesures du client avant d\'envoyer la commande.';render();return}
+if(tab==='home')tab='cmd';shr={title:'Envoyer à l\'atelier : '+MOD[o.model].n,name:c.name,wa:(AT()||{}).t||db.atel,txt:'Commande '+((AT()&&AT().n)?AT().n:'Mesure & Couture')+' : '+MOD[o.model].n+' pour '+c.name+'. Ouvrez '+APP+' puis, dans Clients, collez ce message dans « Importer un message ».\n'+enc({n:c.name,t:c.tel||'',m:c.m||{},k:o.model,f:db.fab,p:o.price,i:o.id,l:o.due||'',a:c.age||'',z:o.note||'',x:c.sx||''})};render()}
+function sendOrder(k){if(!C()){err='Choisissez d\'abord un client.';tab='cli';render();return}
+if(!C().m){err='Enregistrez d\'abord vos mesures pour envoyer la commande.';tab='mes';render();return}
+const o={id:Date.now(),cid:db.cid,model:k,price:priceOf(k),step:0,date:new Date().toLocaleDateString('fr-FR')};
+db.orders.unshift(o);save();wr('orders/'+o.id,o);msg='Commande créée. Envoyez le message ci-dessous à l\'atelier.';sendO(o.id)}
+function statO(id){const o=db.orders.find(x=>x.id===id),c=o&&db.clients.find(x=>x.id===o.cid);if(!c)return;
+if(tab==='home')tab='cmd';
+shr={title:'Envoyer l\'état à '+c.name,name:c.name,wa:String(c.tel||'').replace(/[^0-9]/g,''),txt:'Mise à jour de votre commande '+(db.at||'Mesure & Couture')+' : '+MOD[o.model].n+', étape « '+STEPS[o.step]+' ». Ouvrez '+APP+' puis collez ce message dans « Importer un message ».\n'+enc({u:1,n:c.name,k:o.model,s:o.step,i:o.ref||0,l:o.due||''})};render()}
+function applyU(o){const st=+o.s;if(!MOD[o.k]||!(st>=0&&st<=4)){err='Message d\'état invalide.';render();return}
+let x=db.orders.find(q=>q.id===+o.i);
+if(!x){const nm=String(o.n||'').toLowerCase();x=db.orders.find(q=>{const c=db.clients.find(w=>w.id===q.cid);return q.model===o.k&&c&&c.name.toLowerCase()===nm&&q.step<=st})}
+if(!x){err='Commande introuvable sur cet appareil : utilisez le même profil que celui qui a passé la commande.';render();return}
+x.step=st;if(/^\d{4}-\d{2}-\d{2}$/.test(o.l||''))x.due=o.l;save();wr('orders/'+x.id,x);err='';msg='Commande mise à jour : '+MOD[x.model].n+', étape « '+STEPS[st]+' ».';tab='cmd';render()}
+async function connect(){
+let d=null,u=null;try{if(window.claude&&claude.use){d=await claude.use('db');u=await claude.use('user')}}catch(e){}
+if(!d||!u)return;let id='';try{id=await u.id()}catch(e){}if(!id)return;
+pf='data/users/'+id+'/';rdb=d;$('sy').dataset.f='Vos données sont privées et synchronisées entre vos appareils.';refresh();
+let f=true;
+d.collection('data/users/'+id).onSnapshot(s=>{
+const cl=[],od=[],sk=[];let st=null;
+s.docs.forEach(x=>{if(x.id==='settings')st=x.data();else if(x.id[0]==='c')cl.push(x.data());else if(x.id[0]==='o')od.push(x.data());else if(x.id[0]==='s')sk.push(x.data())});
+cl.sort((x,y)=>x.id-y.id);od.sort((x,y)=>y.id-x.id);sk.sort((x,y)=>x.id-y.id);
+const first=f;f=false;let ch=false;
+if(first&&!cl.length&&!od.length&&!sk.length){db.clients.forEach(c=>wr('clients/'+c.id,c));db.orders.forEach(o=>wr('orders/'+o.id,o));db.stock.forEach(x=>wr('stock/'+x.id,x))}
+else{if(cs(cl)!==cs(db.clients)){db.clients=cl;ch=true}if(cs(od)!==cs(db.orders)){db.orders=od;ch=true}if(cs(sk)!==cs(db.stock)){db.stock=sk;ch=true}}
+if(st){const n={prices:Object.assign({},db.prices,st.prices),width:st.width||db.width,shrink:st.shrink==null?db.shrink:st.shrink,fab:st.fab||db.fab,at:st.at==null?db.at:st.at,cur:st.cur||db.cur,atel:st.atel==null?db.atel:st.atel,vd:st.vd==null?db.vd:st.vd,cond:st.cond==null?db.cond:st.cond,rd:st.rd==null?db.rd:st.rd};
+if(cs(n)!==cs(cfg())){Object.assign(db,n);ch=true}lastS=JSON.stringify(cfg());sr=true}
+else if(first){sr=true;sset()}
+if(ch){save();refresh()}},()=>{})}
+render();connect();
+</script></body></html>
